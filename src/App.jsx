@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import aboutMainPhoto from './assets/IMG_7769.jpg';
+import raahiUserFlow from './assets/raahi-user-flow.png';
+import raahiTaskFlow from './assets/raahi-task-flow.png';
+import raahiMoodBoard from './assets/raahi-mood-board.png';
+import raahiMoodBoardCopy from './assets/raahi-mood-board-copy.png';
+import raahiPersonaOne from './assets/raahi-persona-1.png';
+import raahiPersonaTwo from './assets/raahi-persona-2.png';
+import raahiLoginScreens from './assets/raahi-login-screens.png';
+import raahiSignUpScreens from './assets/raahi-sign-up-screens.png';
+import raahiPreferenceScreens from './assets/raahi-preference-screens.png';
+import raahiPlanningTrip from './assets/raahi-planning-trip.png';
+import raahiHomePages from './assets/raahi-home-pages.png';
+import bsnlLogoAlt from './assets/bsnl-logo-alt.png';
 import { Mail, Linkedin, Github, Instagram, Sparkles, ArrowUpRight, ArrowRight, ArrowLeft, ExternalLink, Lock, Calendar, User, Target, Search, Users, Zap, BarChart3, Lightbulb, ClipboardList, Smartphone, Globe, Shield, ZapOff, AlertCircle, TrendingDown, Clock, MessageSquare, LogOut, Eye, Ear, Heart, Brain } from 'lucide-react';
 
 // --- Custom Hooks ---
@@ -258,7 +270,7 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
              <Calendar className="mb-6 text-zinc-500" size={28} />
              <h4 className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Timeline</h4>
              <p className="text-sm font-bold uppercase tracking-wider">
-               {isRaahi || isVoia || isSolar ? "" : "12 May 2025 — 12 July 2025"}
+               {isRaahi ? "2 months" : isVoia || isSolar ? "" : "12 May 2025 — 12 July 2025"}
              </p>
           </div>
           <div className="p-10 border border-white/10 rounded-[50px] bg-white/[0.03] backdrop-blur-sm">
@@ -1080,13 +1092,11 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
                         <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-white via-white to-zinc-100/80"></div>
                         <div className="absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.7),transparent_55%)]"></div>
                         <div className="relative z-10 h-full w-full flex items-center justify-center">
-                          <div className="w-20 h-20 rounded-full bg-[#0b3a75] flex items-center justify-center shadow-[0_0_30px_rgba(13,79,170,0.35)]">
-                            <svg viewBox="0 0 64 64" className="w-12 h-12">
-                              <circle cx="32" cy="32" r="22" fill="none" stroke="white" strokeWidth="4" />
-                              <path d="M18 36C24 28 40 28 46 36" stroke="white" strokeWidth="4" strokeLinecap="round" fill="none" />
-                              <path d="M22 26C26 22 38 22 42 26" stroke="white" strokeWidth="4" strokeLinecap="round" fill="none" />
-                            </svg>
-                          </div>
+                          <img
+                            src={bsnlLogoAlt}
+                            alt="BSNL logo"
+                            className="w-48 h-48 object-contain drop-shadow-[0_0_20px_rgba(13,79,170,0.2)]"
+                          />
                         </div>
                       </div>
                       <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-white/20"></div>
@@ -1413,9 +1423,11 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
                 <div className="space-y-6">
                   <h3 className="text-3xl font-black uppercase tracking-tight">User Persona 1</h3>
                   <div className="p-6 rounded-[24px] border border-white/10 bg-white/[0.02] text-center">
-                    <div className="w-28 h-28 mx-auto rounded-full bg-white/10 mb-4 flex items-center justify-center text-zinc-500 text-sm font-black uppercase">
-                      Avatar
-                    </div>
+                    <img
+                      src={raahiPersonaOne}
+                      alt="Aarav Desai persona avatar"
+                      className="w-28 h-28 mx-auto rounded-full border border-white/10 mb-4 object-cover"
+                    />
                     <div className="text-xl font-black text-zinc-100">Aarav Desai</div>
                     <div className="text-sm text-zinc-400">The Explorer</div>
                     <div className="mt-6 text-left text-sm text-zinc-300 space-y-2">
@@ -1459,9 +1471,11 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
                 <div className="space-y-6">
                   <h3 className="text-3xl font-black uppercase tracking-tight">User Persona 2</h3>
                   <div className="p-6 rounded-[24px] border border-white/10 bg-white/[0.02] text-center">
-                    <div className="w-28 h-28 mx-auto rounded-full bg-white/10 mb-4 flex items-center justify-center text-zinc-500 text-sm font-black uppercase">
-                      Avatar
-                    </div>
+                    <img
+                      src={raahiPersonaTwo}
+                      alt="Pooja Nair persona avatar"
+                      className="w-28 h-28 mx-auto rounded-full border border-white/10 mb-4 object-cover"
+                    />
                     <div className="text-xl font-black text-zinc-100">Pooja Nair</div>
                     <div className="text-sm text-zinc-400">The Caregiver</div>
                     <div className="mt-6 text-left text-sm text-zinc-300 space-y-2">
@@ -1543,60 +1557,78 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
             {/* Mapping the Journey */}
             <section className="space-y-6">
               <h2 className="text-5xl font-black uppercase tracking-tighter">Mapping the Journey</h2>
-              <p className="text-lg md:text-xl text-zinc-400 max-w-4xl">
-                Explain your research in detail with observations and inferences
-              </p>
-              <div className="space-y-3 max-w-4xl">
-                <h3 className="text-2xl font-black uppercase tracking-tight">User Flows</h3>
-                <p className="text-sm md:text-base text-zinc-400">
-                  To look at the User flow in detail, below is the figma link:
-                </p>
-                <p className="text-sm md:text-base text-zinc-300">
-                  https://www.figma.com/board/SlINHxCvj6NAwNCrP6WMbQ/Travel-App?node-id=0-1&t=svee5QJPVFfT2uu4-1
-                </p>
-              </div>
-              <div className="rounded-[24px] border border-white/10 bg-white/[0.02] p-6">
-                <div className="aspect-[16/9] bg-white/5 rounded-[16px] flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                  User Flow Diagram [Placeholder]
+              <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center rounded-[24px] border border-white/10 bg-white/[0.02] p-6 md:p-8">
+                <div className="space-y-4">
+                  <p className="text-lg md:text-xl text-zinc-400">User Flows</p>
+                  <p className="text-sm md:text-base text-zinc-500 max-w-md leading-relaxed">
+                    A high-level view of how users move through the Raahi product journey, from onboarding to planning and shared travel experiences.
+                  </p>
+                  <p className="text-sm md:text-base text-zinc-300 max-w-md break-words">
+                    https://www.figma.com/board/SlINHxCvj6NAwNCrP6WMbQ/Travel-App?node-id=0-1&t=svee5QJPVFfT2uu4-1
+                  </p>
                 </div>
+                <img
+                  src={raahiUserFlow}
+                  alt="Raahi user flow diagram"
+                  className="w-full max-h-[70vh] rounded-[16px] border border-white/10 object-contain justify-self-end"
+                />
               </div>
             </section>
 
-            {/* User Flows */}
+            {/* Task Flow */}
             <section className="space-y-6">
-              <h2 className="text-5xl font-black uppercase tracking-tighter">User Flows</h2>
-              <p className="text-sm md:text-base text-zinc-400 max-w-4xl">
-                To look at the User flow in detail, below is the figma link:
-              </p>
-              <p className="text-sm md:text-base text-zinc-300 max-w-4xl">
-                https://www.figma.com/board/SlINHxCvj6NAwNCrP6WMbQ/Travel-App?node-id=0-1&t=svee5QJPVFfT2uu4-1
-              </p>
-              <div className="rounded-[24px] border border-white/10 bg-white/[0.02] p-6">
-                <div className="aspect-[4/5] bg-white/5 rounded-[16px] flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                  User Flow Diagram [Placeholder]
+              <h2 className="text-5xl font-black uppercase tracking-tighter">Task Flow</h2>
+              <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center rounded-[24px] border border-white/10 bg-white/[0.02] p-6 md:p-8">
+                <div className="space-y-4">
+                  <p className="text-lg md:text-xl text-zinc-400">Task Flow</p>
+                  <p className="text-sm md:text-base text-zinc-500 max-w-md leading-relaxed">
+                    A closer look at how users move through specific tasks, decisions, and interactions within the Raahi experience.
+                  </p>
+                  <p className="text-sm md:text-base text-zinc-300 max-w-md break-words">
+                    https://www.figma.com/board/SlINHxCvj6NAwNCrP6WMbQ/Travel-App?node-id=0-1&t=svee5QJPVFfT2uu4-1
+                  </p>
                 </div>
+                <img
+                  src={raahiTaskFlow}
+                  alt="Raahi task flow diagram"
+                  className="w-full max-h-[70vh] rounded-[16px] border border-white/10 object-contain justify-self-end"
+                />
               </div>
             </section>
 
             {/* Design Language & Feel */}
             <section className="space-y-6">
               <h2 className="text-5xl font-black uppercase tracking-tighter">Design Language & Feel</h2>
-              <p className="text-lg md:text-xl text-zinc-400 max-w-4xl">Mood Board</p>
-              <div className="rounded-[24px] border border-white/10 bg-white/[0.02] p-6">
-                <div className="aspect-[16/9] bg-white/5 rounded-[16px] flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                  Mood Board Collage [Placeholder]
+              <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center rounded-[24px] border border-white/10 bg-white/[0.02] p-6 md:p-8">
+                <div className="space-y-4">
+                  <p className="text-lg md:text-xl text-zinc-400">Mood Board</p>
+                  <p className="text-sm md:text-base text-zinc-500 max-w-md leading-relaxed">
+                    A visual direction exploring tone, color, interface cues, and the overall travel experience language for Raahi.
+                  </p>
                 </div>
+                <img
+                  src={raahiMoodBoardCopy}
+                  alt="Raahi mood board"
+                  className="w-full max-h-[70vh] rounded-[16px] border border-white/10 object-contain justify-self-end"
+                />
               </div>
             </section>
 
             {/* Story Board */}
             <section className="space-y-6">
               <h2 className="text-5xl font-black uppercase tracking-tighter">Story Board</h2>
-              <p className="text-lg md:text-xl text-zinc-400 max-w-4xl">A Journey for Everyone</p>
-              <div className="rounded-[24px] border border-white/10 bg-white/[0.02] p-6">
-                <div className="aspect-[3/4] bg-white/5 rounded-[16px] flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                  Story Board Panels [Placeholder]
+              <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center rounded-[24px] border border-white/10 bg-white/[0.02] p-6 md:p-8">
+                <div className="space-y-4">
+                  <p className="text-lg md:text-xl text-zinc-400">A Journey for Everyone</p>
+                  <p className="text-sm md:text-base text-zinc-500 max-w-md leading-relaxed">
+                    A storyboard showing how Raahi supports travelers through planning, discovery, and shared decision-making.
+                  </p>
                 </div>
+                <img
+                  src={raahiMoodBoard}
+                  alt="Raahi storyboard"
+                  className="w-full max-h-[70vh] rounded-[16px] border border-white/10 object-contain justify-self-end"
+                />
               </div>
             </section>
 
@@ -1611,15 +1643,57 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
             {/* Bringing Raahi to Life */}
             <section className="space-y-10">
               <h2 className="text-5xl font-black uppercase tracking-tighter">Bringing Raahi to Life</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-[9/16] rounded-[24px] border border-white/10 bg-white/[0.02] flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-zinc-500"
-                  >
-                    Screen {i + 1}
-                  </div>
-                ))}
+              <div className="space-y-10">
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.02] p-4 md:p-6">
+                  <img
+                    src={raahiLoginScreens}
+                    alt="Raahi login screens"
+                    className="w-full max-h-[80vh] rounded-[20px] object-contain"
+                  />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500 text-center">
+                  Login Screens
+                </p>
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.02] p-4 md:p-6">
+                  <img
+                    src={raahiSignUpScreens}
+                    alt="Raahi sign up screens"
+                    className="w-full max-h-[80vh] rounded-[20px] object-contain"
+                  />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500 text-center">
+                  Sign Up Screens
+                </p>
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.02] p-4 md:p-6">
+                  <img
+                    src={raahiPreferenceScreens}
+                    alt="Raahi preference screens"
+                    className="w-full max-h-[80vh] rounded-[20px] object-contain"
+                  />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500 text-center">
+                  Preference Screens
+                </p>
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.02] p-4 md:p-6">
+                  <img
+                    src={raahiPlanningTrip}
+                    alt="Raahi travel planning screens"
+                    className="w-full max-h-[80vh] rounded-[20px] object-contain"
+                  />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500 text-center">
+                  Travel Planning Screens
+                </p>
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.02] p-4 md:p-6">
+                  <img
+                    src={raahiHomePages}
+                    alt="Raahi home page screens"
+                    className="w-full max-h-[80vh] rounded-[20px] object-contain"
+                  />
+                </div>
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500 text-center">
+                  Home Page Screens
+                </p>
               </div>
             </section>
 
@@ -2368,8 +2442,8 @@ const App = () => {
               <div className="max-w-3xl space-y-8">
                 <div className="space-y-4 text-sm md:text-base text-zinc-300">
                   <div><span className="font-black text-zinc-100">Name:</span> Khushii Mehta</div>
-                  <div><span className="font-black text-zinc-100">Age:</span> 19</div>
-                  <div><span className="font-black text-zinc-100">Education:</span> Second-year undergraduate at FLAME University</div>
+                  <div><span className="font-black text-zinc-100">Age:</span> 22</div>
+                  <div><span className="font-black text-zinc-100">Education:</span> Fourth year undergraduate student at FLAME University</div>
                   <div><span className="font-black text-zinc-100">Field of Study:</span> Design (Major), Marketing (Minor)</div>
                   <div className="pt-2">
                     <div className="font-black text-zinc-100">Background:</div>
@@ -2528,7 +2602,7 @@ const App = () => {
           </div>
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-16">
             <a
-              href="mailto:khushii.mehta@flame.edu.in"
+              href="mailto:khushiimehtadesigns@gmail.com"
               className="px-10 py-4 rounded-full border border-white/20 text-sm uppercase tracking-[0.2em] font-black hover:bg-white hover:text-black transition-all cursor-none"
               onMouseEnter={() => { setHovering(true); setCursorLabel("EMAIL ME"); }}
               onMouseLeave={() => setHovering(false)}
@@ -2546,7 +2620,7 @@ const App = () => {
           </div>
           <div className="relative mt-6 w-full">
             <div className="inline-block whitespace-nowrap text-[12vw] md:text-[8vw] font-black tracking-tighter text-white/80 animate-marquee">
-              khushii.mehta@flame.edu.in
+              khushiimehtadesigns@gmail.com
             </div>
           </div>
         </div>
