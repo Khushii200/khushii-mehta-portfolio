@@ -12,7 +12,9 @@ import raahiPreferenceScreens from './assets/raahi-preference-screens.png';
 import raahiPlanningTrip from './assets/raahi-planning-trip.png';
 import raahiHomePages from './assets/raahi-home-pages.png';
 import bsnlLogoAlt from './assets/bsnl-logo-alt.png';
-import { Mail, Linkedin, Github, Instagram, Sparkles, ArrowUpRight, ArrowRight, ArrowLeft, ExternalLink, Lock, Calendar, User, Target, Search, Users, Zap, BarChart3, Lightbulb, ClipboardList, Smartphone, Globe, Shield, ZapOff, AlertCircle, TrendingDown, Clock, MessageSquare, LogOut, Eye, Ear, Heart, Brain } from 'lucide-react';
+import { Mail, Linkedin, Github, Instagram, Sparkles, ArrowUpRight, ArrowRight, ArrowLeft, ExternalLink, Lock, Calendar, User, Target, Search, Users, Zap, BarChart3, Lightbulb, ClipboardList, Smartphone, Globe, Shield, ZapOff, AlertCircle, TrendingDown, MessageSquare, LogOut, Eye, Ear, Heart, Brain } from 'lucide-react';
+import { LoadingExperience } from './components/entrance/LoadingExperience';
+import { WorkSection } from './components/work/WorkSection';
 
 // --- Custom Hooks ---
 const useMousePosition = () => {
@@ -115,14 +117,10 @@ const CustomCursor = ({ hovering, label, status }) => {
   return (
     <>
       <div 
-        ref={dotRef}
-        className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full z-[10000] pointer-events-none opacity-80 mix-blend-difference will-change-transform"
-      />
-      <div 
         ref={containerRef}
         className={`fixed top-0 left-0 z-[9999] pointer-events-none flex items-center justify-center whitespace-nowrap px-6 py-3 rounded-2xl shadow-2xl border will-change-transform transition-colors duration-300 ${
           status === 'locked' 
-          ? 'bg-red-600 border-red-400 text-white' 
+          ? 'bg-[var(--color-accent)] border-[var(--color-accent)] text-white'
           : 'bg-white border-zinc-200 text-black'
         }`}
       >
@@ -232,8 +230,8 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-[200] bg-[#070707] overflow-y-auto animate-fade-in cursor-default md:cursor-none">
-      <nav className="sticky top-0 w-full px-6 md:px-12 py-8 flex justify-between items-center bg-[#070707]/80 backdrop-blur-xl z-[210]">
+    <div className="project-detail fixed inset-0 z-[200] overflow-y-auto animate-fade-in cursor-default md:cursor-none">
+      <nav className="project-detail__nav sticky top-0 w-full px-6 md:px-12 py-6 flex justify-between items-center backdrop-blur-xl z-[210]">
         <button 
           onClick={onBack}
           onMouseEnter={() => { setHovering(true); setCursorLabel("GO BACK"); }}
@@ -265,12 +263,12 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
           </p>
         </header>
 
-        <div className={`grid grid-cols-1 md:grid-cols-${isSolar || isRaahi || isVoia ? '4' : '3'} gap-8 mb-32`}>
+        <div className={`grid grid-cols-1 ${isSolar || isRaahi || isVoia ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-8 mb-32`}>
           <div className="p-10 border border-white/10 rounded-[50px] bg-white/[0.03] backdrop-blur-sm">
              <Calendar className="mb-6 text-zinc-500" size={28} />
              <h4 className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Timeline</h4>
              <p className="text-sm font-bold uppercase tracking-wider">
-               {isRaahi ? "2 months" : isVoia || isSolar ? "" : "12 May 2025 — 12 July 2025"}
+               {isRaahi || isVoia ? "2 months" : isSolar ? "" : "12 May 2025 — 12 July 2025"}
              </p>
           </div>
           <div className="p-10 border border-white/10 rounded-[50px] bg-white/[0.03] backdrop-blur-sm">
@@ -2326,28 +2324,77 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
 };
 
 const App = () => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [hovering, setHovering] = useState(false);
   const [cursorLabel, setCursorLabel] = useState("");
   const [cursorStatus, setCursorStatus] = useState("default");
   const [selectedProject, setSelectedProject] = useState(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [aboutOpen, setAboutOpen] = useState(false);
   const { x, y } = useMousePosition();
 
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-
-
   const projects = [
-    { id: 1, number: "(01)", title: "Reimagining BSNL", category: "Strategy Design", description: "A comprehensive brand and UX strategy to reposition India's legacy telecom provider for the digital-first era.", status: "completed" },
-    { id: 2, number: "(02)", title: "Raahi", category: "UX Design", description: "Crafting a seamless digital journey for modern travelers.", status: "completed" },
-    { id: 3, number: "(03)", title: "Voia", category: "Design Thinking", description: "VOIA is a wearable that enables discreet, real-time communication between teachers and deaf-mute students using light and vibration.", status: "completed" },
-    { id: 4, number: "(04)", title: "SolarLink", category: "Service Design", description: "Designing the infrastructure for future-proof renewable energy services.", status: "completed" },
-    { id: 5, number: "(05)", title: "Revela", category: "Tangible Interface", description: "Exploring physical interactions in a digital-first world.", status: "locked" },
+    {
+      id: 1,
+      number: "(01)",
+      title: "Reimagining BSNL",
+      tabLabel: "BSNL",
+      category: "Strategy Design",
+      description: "A comprehensive brand and UX strategy to reposition India's legacy telecom provider for the digital-first era.",
+      status: "completed",
+      image: null,
+      year: "2024",
+      role: "Design Strategist",
+      tags: ["Brand Strategy", "UX Research", "Service Design"],
+    },
+    {
+      id: 2,
+      number: "(02)",
+      title: "Raahi",
+      tabLabel: "RAAHI",
+      category: "UX Design",
+      description: "Crafting a seamless digital journey for modern travelers.",
+      status: "completed",
+      image: null,
+      year: "2024",
+      role: "Design Research & UI/UX",
+      tags: ["Product Design", "User Research", "Prototyping"],
+    },
+    {
+      id: 3,
+      number: "(03)",
+      title: "Voia",
+      tabLabel: "VOIA",
+      category: "Design Thinking",
+      description: "VOIA is a wearable that enables discreet, real-time communication between teachers and deaf-mute students using light and vibration.",
+      status: "completed",
+      image: null,
+      year: "2024",
+      tags: ["Wearable", "Inclusive Design", "Hardware"],
+    },
+    {
+      id: 4,
+      number: "(04)",
+      title: "SolarLink",
+      tabLabel: "SOLARLINK",
+      category: "Service Design",
+      description: "Designing the infrastructure for future-proof renewable energy services.",
+      status: "completed",
+      image: null,
+      year: "2024",
+      role: "Service Design · Research · Insight Synthesis · Journey Mapping · Concept & Experience Design",
+      tags: ["Service Design", "Systems Thinking", "Sustainability"],
+    },
+    {
+      id: 5,
+      number: "(05)",
+      title: "Revela",
+      tabLabel: "REVELA",
+      category: "Tangible Interface",
+      description: "Exploring physical interactions in a digital-first world.",
+      status: "locked",
+      image: null,
+      year: "2025",
+      tags: ["Tangible UI", "Physical Computing"],
+    },
   ];
 
   const openProject = (p) => {
@@ -2358,213 +2405,90 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070707] text-zinc-100 selection:bg-white selection:text-black overflow-x-hidden cursor-none pb-20 font-rounded">
-      <GrainOverlay />
-      <CustomCursor hovering={hovering} label={cursorLabel} status={cursorStatus} />
-      {hovering && <FloatingDoodle x={x} y={y} />}
-
-      {selectedProject && (
-        <ProjectDetail 
-          project={selectedProject} 
-          onBack={() => setSelectedProject(null)} 
-          setHovering={setHovering}
-          setCursorLabel={setCursorLabel}
-        />
-      )}
-
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 w-full z-[100] px-6 md:px-12 py-8 flex justify-between items-center mix-blend-difference">
-        <div 
-          onMouseEnter={() => { setHovering(true); setCursorLabel("HI"); setCursorStatus("default"); }} 
-          onMouseLeave={() => { setHovering(false); setCursorLabel(""); setCursorStatus("default"); }}
-          className="text-xl md:text-2xl font-black tracking-tight group cursor-none uppercase"
-        >
-          Khushii <span className="text-zinc-500 group-hover:line-through decoration-zinc-100 decoration-4 transition-all">Mehta</span>
-        </div>
-        <div className="flex gap-4 items-center text-[10px] font-bold tracking-[0.4em] opacity-60">
-          <a href="#work" className="hover:opacity-100 transition-opacity uppercase cursor-none px-4 py-2 rounded-full hover:bg-white/10">Work</a>
-          <a href="#about" className="hover:opacity-100 transition-opacity uppercase cursor-none px-4 py-2 rounded-full hover:bg-white/10">About</a>
-          <a href="#contact" className="hover:opacity-100 transition-opacity uppercase cursor-none px-4 py-2 rounded-full hover:bg-white/10">Contact</a>
-          <div className="font-mono tabular-nums bg-white/10 px-4 py-2 rounded-full border border-white/5">{time}</div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <header className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
-        <div className="absolute top-1/4 right-1/4 opacity-10 rotate-12 scale-[3]">
-           <DoodleArrow className="w-40 h-40" />
-        </div>
-        <div className="relative z-10 text-center">
-          <div className="mb-8 relative inline-block">
-            <span className="inline-block text-[11px] font-mono tracking-[0.3em] uppercase animate-slide-up bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full border border-zinc-700">
-              Strategy & Experience Design
-            </span>
-          </div>
-          <h1 className="text-[16vw] md:text-[14vw] font-black leading-[0.85] tracking-tight uppercase mb-16 relative">
-            <div className="overflow-hidden"><span className="block animate-slide-up" style={{ animationDelay: '0.1s' }}>Khushii</span></div>
-            <div className="overflow-hidden relative inline-block">
-              <span className="block animate-slide-up" style={{ animationDelay: '0.3s' }}>Mehta</span>
-              <ScribbleUnderline />
-            </div>
-          </h1>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-12 pt-8 animate-fade-in" style={{ animationDelay: '0.8s' }}>
-             <a href="#work" className="group relative px-12 py-6 bg-white text-black font-black text-[11px] uppercase tracking-[0.2em] rounded-full hover:scale-105 transition-all shadow-xl inline-block cursor-none" onMouseEnter={() => { setHovering(true); setCursorLabel("SCROLL DOWN"); }} onMouseLeave={() => setHovering(false)}>Explore Projects</a>
-          </div>
-        </div>
-      </header>
-
-      {/* Projects List Section */}
-      <section id="work" className="relative z-10 pt-40 pb-20 bg-[#070707]">
-        <div className="max-w-[1800px] mx-auto px-6 md:px-12 mb-24">
-            <h2 className="text-8xl md:text-[9vw] font-black tracking-tighter uppercase leading-[0.8]">My <br/> <span className="text-zinc-500 italic font-medium">Projects</span></h2>
-        </div>
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12">
-          {projects.map((p) => (
-            <div key={p.id} onClick={() => openProject(p)} className={`group relative border-t border-white/10 last:border-b py-12 md:py-20 px-8 md:px-16 transition-all duration-500 cursor-none rounded-[40px] md:rounded-[60px] hover:my-4 ${p.status === 'locked' ? 'hover:bg-red-500/5' : 'hover:bg-white active:scale-[0.98]'}`} onMouseEnter={() => { setHovering(true); setCursorLabel(p.status === 'locked' ? "Coming Soon" : "View Case Study"); setCursorStatus(p.status); }} onMouseLeave={() => { setHovering(false); setCursorLabel(""); setCursorStatus("default"); }}>
-              <div className="hidden md:flex items-center justify-between gap-20">
-                <div className="flex items-center gap-12 flex-1">
-                  <span className={`text-xs font-mono opacity-40 transition-colors ${p.status === 'locked' ? 'group-hover:text-red-500' : 'group-hover:text-black group-hover:opacity-60'}`}>{p.number}</span>
-                  <h3 className={`text-6xl lg:text-8xl font-black uppercase tracking-tighter transition-all duration-500 ${p.status === 'locked' ? 'group-hover:text-red-500/40' : 'group-hover:text-black group-hover:italic'}`}>{p.title}</h3>
-                </div>
-                <p className={`text-zinc-500 text-sm font-medium leading-snug max-w-sm text-right transition-colors ${p.status === 'locked' ? 'group-hover:text-red-500/60' : 'group-hover:text-black/70'}`}>{p.description}</p>
-                <div className={`w-20 h-20 rounded-full border border-white/10 flex items-center justify-center transition-all duration-500 ${p.status === 'locked' ? 'group-hover:border-red-500/20 group-hover:text-red-500' : 'group-hover:border-black/20 group-hover:rotate-45 group-hover:text-black'}`}>{p.status === 'locked' ? <Lock size={32} /> : <ArrowUpRight size={40} />}</div>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="portfolio-shell min-h-screen font-rounded">
+      {/* 1. Paper Plane + Mini Khushii Entrance Experience */}
+      <section id="entrance" className="relative w-full z-50">
+        <LoadingExperience />
       </section>
 
+      {/* 2. Existing Portfolio Website (Preserved Intact) */}
+      <div id="portfolio-content" className="relative">
+        <GrainOverlay />
+        <CustomCursor hovering={hovering} label={cursorLabel} status={cursorStatus} />
+        {hovering && <FloatingDoodle x={x} y={y} />}
+
+        {selectedProject && (
+          <ProjectDetail
+            project={selectedProject}
+            onBack={() => setSelectedProject(null)}
+            setHovering={setHovering}
+            setCursorLabel={setCursorLabel}
+          />
+        )}
+
+      {/* Projects / Work Section */}
+      <WorkSection
+        projects={projects}
+        onOpenProject={openProject}
+        setHovering={setHovering}
+        setCursorLabel={setCursorLabel}
+        setCursorStatus={setCursorStatus}
+      />
+
       {/* About Section */}
-      <section id="about" className="relative z-10 py-32 bg-[#070707]">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr_1fr] gap-16 items-start">
-            <div className={`relative z-10 hidden lg:block transition-opacity duration-300 ${aboutOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-              <div className="max-w-3xl space-y-8">
-                <div className="space-y-4 text-sm md:text-base text-zinc-300">
-                  <div><span className="font-black text-zinc-100">Name:</span> Khushii Mehta</div>
-                  <div><span className="font-black text-zinc-100">Age:</span> 22</div>
-                  <div><span className="font-black text-zinc-100">Education:</span> Fourth year undergraduate student at FLAME University</div>
-                  <div><span className="font-black text-zinc-100">Field of Study:</span> Design (Major), Marketing (Minor)</div>
-                  <div className="pt-2">
-                    <div className="font-black text-zinc-100">Background:</div>
-                    <p>
-                      Multidisciplinary design student with academic exposure to design thinking, graphic design, programming, storytelling, marketing, economics, product and brand management, and consumer behavior.
-                    </p>
-                  </div>
-                </div>
+      <section id="about" className="portfolio-section about-section">
+        <div className="site-container about-profile">
+          <header className="about-profile__header">
+            <p className="section-eyebrow">About</p>
+            <h2>Experience Designer<br />Creative Technologist</h2>
+            <p>I bring research, technology and storytelling together to make ideas useful, understandable and human.</p>
+          </header>
 
-                <div className="space-y-4 text-sm md:text-base text-zinc-300">
-                  <div>
-                    <h3 className="text-sm font-black uppercase tracking-widest text-zinc-200 mb-2">Goals</h3>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>Create meaningful, real‑world solutions</li>
-                      <li>Combine design, technology, and marketing in product thinking</li>
-                      <li>Build functional, user‑centered outcomes rather than purely visual concepts</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative h-[520px] lg:h-[580px] flex items-center justify-center [perspective:1200px]">
-              <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -top-8 -left-6 rotate-[-10deg] bg-white p-2 shadow-2xl">
-                  <div className="w-28 h-36 bg-gradient-to-br from-zinc-300/70 via-zinc-200/80 to-zinc-400/60" />
-                </div>
-                <div className="absolute -bottom-6 left-2 rotate-[8deg] bg-white p-2 shadow-2xl">
-                  <div className="w-32 h-24 bg-gradient-to-br from-zinc-200/70 via-zinc-300/80 to-zinc-500/60" />
-                </div>
-                <div className="absolute -top-2 -right-8 rotate-[12deg] bg-white p-2 shadow-2xl">
-                  <div className="w-28 h-32 bg-gradient-to-br from-zinc-400/70 via-zinc-300/80 to-zinc-200/60" />
-                </div>
-              </div>
-
-              <div className="pointer-events-none absolute inset-0">
-                <svg className="absolute -left-8 top-8 w-24 h-24 rotate-[-8deg] text-yellow-300/90" viewBox="0 0 120 120" fill="none">
-                  <circle cx="60" cy="60" r="26" stroke="currentColor" strokeWidth="4" />
-                  <circle cx="50" cy="55" r="3" fill="currentColor" />
-                  <circle cx="70" cy="55" r="3" fill="currentColor" />
-                  <path d="M48 70C54 76 66 76 72 70" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                  <path d="M60 10V26M60 94V110M10 60H26M94 60H110M22 22L34 34M86 86L98 98M22 98L34 86M86 34L98 22" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                </svg>
-                <svg className="absolute right-8 -top-4 w-28 h-20 rotate-[6deg]" viewBox="0 0 140 80" fill="none">
-                  <path d="M10 60C22 30 46 18 70 18C94 18 118 30 130 60" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" />
-                  <path d="M16 60C28 34 48 26 70 26C92 26 112 34 124 60" stroke="#f59e0b" strokeWidth="6" strokeLinecap="round" />
-                  <path d="M22 60C34 38 50 34 70 34C90 34 106 38 118 60" stroke="#22c55e" strokeWidth="6" strokeLinecap="round" />
-                  <path d="M28 60C38 42 52 42 70 42C88 42 102 42 112 60" stroke="#3b82f6" strokeWidth="6" strokeLinecap="round" />
-                </svg>
-                <svg className="absolute right-2 bottom-0 w-24 h-24 rotate-[8deg] text-pink-300/90" viewBox="0 0 120 120" fill="none">
-                  <circle cx="60" cy="60" r="24" stroke="currentColor" strokeWidth="4" />
-                  <circle cx="50" cy="56" r="3" fill="currentColor" />
-                  <circle cx="70" cy="56" r="3" fill="currentColor" />
-                  <path d="M48 72C54 78 66 78 72 72" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                  <path d="M36 44C28 36 18 30 10 28" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                  <path d="M84 44C92 36 102 30 110 28" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                </svg>
-                <svg className="absolute left-6 bottom-10 w-20 h-20 rotate-[-6deg] text-rose-300/90" viewBox="0 0 120 120" fill="none">
-                  <path d="M60 96C60 96 24 70 24 44C24 30 34 20 48 20C58 20 66 26 60 36C54 26 62 20 72 20C86 20 96 30 96 44C96 70 60 96 60 96Z" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
-                </svg>
-              </div>
-
+          <div className="about-layout">
+            <div className="about-portrait">
               <div
-                className={`tilt-card relative bg-white rounded-[32px] p-4 shadow-2xl border border-black/10 w-64 h-[420px] md:w-72 md:h-[460px] ${aboutOpen ? "cursor-default" : "cursor-none"}`}
+                className="tilt-card"
                 style={{ "--rx": `${tilt.y}deg`, "--ry": `${tilt.x}deg` }}
-                onClick={() => {
-                  if (!aboutOpen) setAboutOpen(true);
-                }}
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const px = (e.clientX - rect.left) / rect.width;
                   const py = (e.clientY - rect.top) / rect.height;
-                  const max = 12;
-                  setTilt({
-                    x: (px - 0.5) * max * 2,
-                    y: (0.5 - py) * max * 2,
-                  });
+                  const max = 7;
+                  setTilt({ x: (px - 0.5) * max * 2, y: (0.5 - py) * max * 2 });
                 }}
                 onMouseLeave={() => setTilt({ x: 0, y: 0 })}
               >
-                <img
-                  src={aboutMainPhoto}
-                  alt="Khushii Mehta"
-                  className="h-full w-full rounded-2xl object-cover"
-                />
+                <img src={aboutMainPhoto} alt="Khushii Mehta" />
               </div>
-              {!aboutOpen && (
-                <div className="pointer-events-none absolute right-[-18px] top-[60%] flex flex-col items-start gap-2 rotate-[-4deg]">
-                  <DoodleArrow className="w-16 h-16 text-white/90" />
-                  <span className="text-[12px] uppercase tracking-[0.35em] font-black text-white/90">Tap me</span>
-                </div>
-              )}
             </div>
 
-            <div className={`relative z-10 hidden lg:block transition-opacity duration-300 ${aboutOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-              <div className="max-w-3xl space-y-4 text-sm md:text-base text-zinc-300">
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-zinc-200 mb-2">Motivations</h3>
-                  <ul className="list-disc pl-6 space-y-1">
-                    <li>Understanding how users think, choose, and interact</li>
-                    <li>Translating abstract ideas into tangible prototypes</li>
-                    <li>Using design as a problem‑solving tool, not just aesthetics</li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-zinc-200 mb-2">Skills &amp; Capabilities</h3>
-                  <ul className="list-disc pl-6 space-y-1">
-                    <li>Research and user analysis</li>
-                    <li>Ideation and prototyping</li>
-                    <li>Storytelling and concept communication</li>
-                    <li>Hands‑on experience with Arduino, sensors, motors, and basic programming</li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-zinc-200 mb-2">Approach</h3>
-                  <p>Research‑driven, iterative, and experiment‑led. Prefers learning by building, testing, and refining.</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest text-zinc-200 mb-2">Design Philosophy</h3>
-                  <p>Design should be intuitive, functional, and grounded in user needs while aligning with business and market realities.</p>
-                </div>
+            <div className="about-panel about-panel--intro">
+              <p className="section-eyebrow">Profile</p>
+              <p>I’m Khushii Mehta, a multidisciplinary design student at FLAME University, majoring in Design with a minor in Marketing.</p>
+              <p>My practice connects user behaviour, business context and hands-on experimentation. I turn research into clear systems, prototypes and stories that can work in the real world.</p>
+              <dl className="about-meta">
+                <div><dt>Based in</dt><dd>Mumbai, India</dd></div>
+                <div><dt>Focus</dt><dd>Human-centred products &amp; services</dd></div>
+              </dl>
+            </div>
+
+            <div className="about-panel about-panel--practice">
+              <div>
+                <p className="section-eyebrow">Selected capabilities</p>
+                <ul className="about-capabilities">
+                  <li>Research &amp; user analysis</li>
+                  <li>Ideation &amp; prototyping</li>
+                  <li>Service &amp; experience design</li>
+                  <li>Storytelling &amp; concept communication</li>
+                </ul>
+              </div>
+              <div>
+                <p className="section-eyebrow">Tools &amp; making</p>
+                <p>Digital prototyping · Arduino · Sensors · Motors · Basic programming</p>
+              </div>
+              <div>
+                <p className="section-eyebrow">Approach</p>
+                <p>Research-driven, iterative and experiment-led—learning by building, testing and refining.</p>
               </div>
             </div>
           </div>
@@ -2572,38 +2496,15 @@ const App = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="relative z-10 py-32 bg-[#070707]">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-12 text-center">
-          <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-10">Get in <span className="text-zinc-500 italic font-medium">touch</span></h2>
-          <div className="pointer-events-none absolute inset-0 hidden md:block">
-            <svg className="absolute left-12 top-8 w-20 h-20 rotate-[-6deg] text-yellow-300/90" viewBox="0 0 120 120" fill="none">
-              <path d="M25 30C20 20 30 10 40 15L52 22C58 25 60 32 56 38L48 50C54 62 64 72 76 78L88 70C94 66 101 68 104 74L111 86C115 96 105 106 95 101C70 90 30 50 25 30Z" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M18 18L30 28M8 36L22 40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-            </svg>
-            <svg className="absolute right-16 top-6 w-24 h-20 rotate-[6deg] text-sky-300/90" viewBox="0 0 140 100" fill="none">
-              <rect x="12" y="20" width="116" height="60" rx="10" stroke="currentColor" strokeWidth="4"/>
-              <path d="M12 28L70 60L128 28" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M22 76H38" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-            </svg>
-            <svg className="absolute left-24 bottom-16 w-20 h-20 rotate-[4deg] text-pink-300/90" viewBox="0 0 120 120" fill="none">
-              <circle cx="60" cy="60" r="22" stroke="currentColor" strokeWidth="4" />
-              <circle cx="52" cy="56" r="3" fill="currentColor" />
-              <circle cx="68" cy="56" r="3" fill="currentColor" />
-              <path d="M50 70C54 76 66 76 70 70" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-            </svg>
-            <svg className="absolute right-24 bottom-10 w-20 h-20 rotate-[-4deg] text-emerald-300/90" viewBox="0 0 120 120" fill="none">
-              <rect x="24" y="20" width="72" height="80" rx="10" stroke="currentColor" strokeWidth="4"/>
-              <path d="M44 50V80" stroke="currentColor" strokeWidth="6" strokeLinecap="round"/>
-              <path d="M44 46C44 38 56 38 56 46V80" stroke="currentColor" strokeWidth="6" strokeLinecap="round"/>
-              <path d="M64 64V80" stroke="currentColor" strokeWidth="6" strokeLinecap="round"/>
-              <path d="M64 52C64 44 76 44 76 52V80" stroke="currentColor" strokeWidth="6" strokeLinecap="round"/>
-              <path d="M34 30L28 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-            </svg>
-          </div>
+      <section id="contact" className="portfolio-section contact-section">
+        <div className="site-container text-center contact-panel">
+          <p className="section-eyebrow">Contact</p>
+          <h2 className="contact-title">Let’s make something thoughtful.</h2>
+          <p className="contact-intro">Have a project, opportunity, or idea worth exploring? I’d love to hear about it.</p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-16">
             <a
               href="mailto:khushiimehtadesigns@gmail.com"
-              className="px-10 py-4 rounded-full border border-white/20 text-sm uppercase tracking-[0.2em] font-black hover:bg-white hover:text-black transition-all cursor-none"
+              className="system-button system-button--primary cursor-none"
               onMouseEnter={() => { setHovering(true); setCursorLabel("EMAIL ME"); }}
               onMouseLeave={() => setHovering(false)}
             >
@@ -2611,7 +2512,7 @@ const App = () => {
             </a>
             <a
               href="https://www.linkedin.com"
-              className="px-10 py-4 rounded-full border border-white/20 text-sm uppercase tracking-[0.2em] font-black hover:bg-white hover:text-black transition-all cursor-none"
+              className="system-button cursor-none"
               onMouseEnter={() => { setHovering(true); setCursorLabel("LINKEDIN"); }}
               onMouseLeave={() => setHovering(false)}
             >
@@ -2619,20 +2520,19 @@ const App = () => {
             </a>
           </div>
           <div className="relative mt-6 w-full">
-            <div className="inline-block whitespace-nowrap text-[12vw] md:text-[8vw] font-black tracking-tighter text-white/80 animate-marquee">
+            <div className="contact-email">
               khushiimehtadesigns@gmail.com
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="pb-20">
-        <div className="opacity-20 text-[10px] font-black uppercase tracking-[1em] text-center">©️ 2026 KHUSHII MEHTA • MUMBAI</div>
+      <footer className="site-footer">
+        <div>©️ 2026 KHUSHII MEHTA • MUMBAI</div>
       </footer>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Playfair+Display:ital,wght@1,400;1,900&display=swap');
-        body { font-family: 'Outfit', sans-serif; background-color: #070707; }
+        body { font-family: 'Outfit', sans-serif; background-color: #ffffff; color: #202422; }
         .font-rounded { font-family: 'Outfit', sans-serif; }
         @keyframes slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .animate-slide-up { animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -2668,6 +2568,7 @@ const App = () => {
         ::-webkit-scrollbar { width: 0px; }
         html { scroll-behavior: smooth; }
       `}} />
+      </div>
     </div>
   );
 };
