@@ -4,20 +4,11 @@ import { MiniKhushii } from './MiniKhushii';
 
 export const LoadingExperience = () => {
   const [time, setTime] = useState(new Date().toLocaleTimeString());
-  const [roleIndex, setRoleIndex] = useState(0);
-  const roles = ['Designer', 'Researcher', 'Strategist', 'Maker', 'Storyteller', 'Experimenter'];
 
   useEffect(() => {
     const timer = window.setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
     return () => window.clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setRoleIndex((current) => (current + 1) % roles.length);
-    }, 3600);
-    return () => window.clearInterval(timer);
-  }, [roles.length]);
 
   const scrollToSection = (event, id) => {
     event.preventDefault();
@@ -42,7 +33,7 @@ export const LoadingExperience = () => {
       <main className="studio-stage" aria-labelledby="studio-title">
         <h1 id="studio-title" className="studio-stage__title">
           <span>Hi, I’m</span>
-          <span className="studio-stage__dynamic-word" key={roles[roleIndex]}>{roles[roleIndex]}.</span>
+          <span>Khushii.</span>
         </h1>
 
         <section className="studio-stage__intro" aria-label="Introduction">

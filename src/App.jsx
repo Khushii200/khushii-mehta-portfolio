@@ -2436,34 +2436,30 @@ const App = () => {
 
       {/* About Section */}
       <section id="about" className="portfolio-section about-section">
-        <div className="site-container about-story">
-          <header className="about-story__header">
-            <p className="section-eyebrow">About</p>
-            <h2>Get to know me</h2>
-          </header>
-
-          <div className="about-story__stage">
-            <div className="about-story__portrait">
-              <img src={aboutMainPhoto} alt="Illustrated portrait of Khushii Mehta" />
-            </div>
-            <p className="about-note about-note--research">Curious about<br /><strong>people + behaviour</strong></p>
-            <p className="about-note about-note--study">Design + Marketing<br /><span>FLAME University</span></p>
-            <p className="about-note about-note--strategy">Research<br />+ strategy</p>
-            <p className="about-note about-note--making">Arduino · sensors<br />physical computing</p>
-            <p className="about-note about-note--story">Making ideas<br />feel tangible.</p>
-            <p className="about-note about-note--place">Mumbai / Pune</p>
-            <svg className="about-story__scribbles" viewBox="0 0 1000 620" aria-hidden="true">
-              <path d="M155 176c80-34 137-18 207 35" />
-              <path d="M737 166c-72 14-119 38-178 76" />
-              <path d="M174 406c78-20 133-15 190 20" />
-              <path d="M824 399c-76-18-142-8-212 28" />
-              <path d="M225 275c-18 2-33 13-39 30m-7-2-14 8m22 4-11 13" />
-              <path d="M793 286c19 3 34 16 39 34m5-2 14 8m-22 4 11 13" />
-            </svg>
+        <div className="site-container about-me">
+          <div className="about-me__image">
+            <img src={aboutMainPhoto} alt="Illustrated portrait of Khushii Mehta" />
           </div>
-          <div className="about-story__footer">
-            <p>I’m Khushii Mehta, a multidisciplinary design student who brings research, technology and storytelling together to make ideas useful, understandable and human.</p>
-            <p>Research <span>→</span> Make <span>→</span> Test</p>
+
+          <div className="about-me__content">
+            <header>
+              <p className="section-eyebrow">About</p>
+              <h2>Get to know me</h2>
+            </header>
+
+            <div className="about-me__intro">
+              <p>I’m Khushii Mehta, a multidisciplinary Experience Design student at FLAME University, majoring in Design with a minor in Marketing.</p>
+              <p>I’m curious about people, behaviour and the systems around us. My practice sits at the intersection of research, strategy, storytelling and creative technology.</p>
+              <p>I like turning observations into ideas that people can actually interact with, whether that means designing experiences, building prototypes, experimenting with Arduino and sensors, or figuring out how a system could work better.</p>
+            </div>
+
+            <dl className="about-me__details">
+              <div><dt>Design</dt><dd>Experience Design · UX · Service Design · Visual Thinking</dd></div>
+              <div><dt>Research</dt><dd>User Research · Behaviour · Strategy · Systems Thinking</dd></div>
+              <div><dt>Making</dt><dd>Prototyping · Arduino · Sensors · Creative Technology</dd></div>
+              <div><dt>Based in</dt><dd>Mumbai / Pune</dd></div>
+              <div><dt>Education</dt><dd>FLAME University · Design + Marketing</dd></div>
+            </dl>
           </div>
         </div>
       </section>
