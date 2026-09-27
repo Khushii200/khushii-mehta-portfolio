@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ArrowDown } from 'lucide-react';
 import { MiniKhushii } from './MiniKhushii';
 
 export const LoadingExperience = () => {
@@ -49,6 +50,10 @@ export const LoadingExperience = () => {
             enableMouseLook={false}
           />
         </div>
+
+        <a className="studio-stage__action" href="#work" onClick={(event) => scrollToSection(event, 'work')}>
+          Explore work <ArrowDown size={15} strokeWidth={2.4} />
+        </a>
       </main>
     </div>
   );

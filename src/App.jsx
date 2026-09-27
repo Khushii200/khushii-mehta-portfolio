@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import aboutMainPhoto from './assets/IMG_7769.jpg';
+import aboutMainPhoto from './assets/about-khushii-illustration.png';
 import raahiUserFlow from './assets/raahi-user-flow.png';
 import raahiTaskFlow from './assets/raahi-task-flow.png';
 import raahiMoodBoard from './assets/raahi-mood-board.png';
@@ -2328,7 +2328,6 @@ const App = () => {
   const [cursorLabel, setCursorLabel] = useState("");
   const [cursorStatus, setCursorStatus] = useState("default");
   const [selectedProject, setSelectedProject] = useState(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const { x, y } = useMousePosition();
 
   const projects = [
@@ -2437,60 +2436,34 @@ const App = () => {
 
       {/* About Section */}
       <section id="about" className="portfolio-section about-section">
-        <div className="site-container about-profile">
-          <header className="about-profile__header">
+        <div className="site-container about-story">
+          <header className="about-story__header">
             <p className="section-eyebrow">About</p>
-            <h2>Experience Designer<br />Creative Technologist</h2>
-            <p>I bring research, technology and storytelling together to make ideas useful, understandable and human.</p>
+            <h2>Get to know Khushii</h2>
           </header>
 
-          <div className="about-layout">
-            <div className="about-portrait">
-              <div
-                className="tilt-card"
-                style={{ "--rx": `${tilt.y}deg`, "--ry": `${tilt.x}deg` }}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const px = (e.clientX - rect.left) / rect.width;
-                  const py = (e.clientY - rect.top) / rect.height;
-                  const max = 7;
-                  setTilt({ x: (px - 0.5) * max * 2, y: (0.5 - py) * max * 2 });
-                }}
-                onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-              >
-                <img src={aboutMainPhoto} alt="Khushii Mehta" />
-              </div>
+          <div className="about-story__stage">
+            <div className="about-story__portrait">
+              <img src={aboutMainPhoto} alt="Illustrated portrait of Khushii Mehta" />
             </div>
-
-            <div className="about-panel about-panel--intro">
-              <p className="section-eyebrow">Profile</p>
-              <p>I’m Khushii Mehta, a multidisciplinary design student at FLAME University, majoring in Design with a minor in Marketing.</p>
-              <p>My practice connects user behaviour, business context and hands-on experimentation. I turn research into clear systems, prototypes and stories that can work in the real world.</p>
-              <dl className="about-meta">
-                <div><dt>Based in</dt><dd>Mumbai, India</dd></div>
-                <div><dt>Focus</dt><dd>Human-centred products &amp; services</dd></div>
-              </dl>
-            </div>
-
-            <div className="about-panel about-panel--practice">
-              <div>
-                <p className="section-eyebrow">Selected capabilities</p>
-                <ul className="about-capabilities">
-                  <li>Research &amp; user analysis</li>
-                  <li>Ideation &amp; prototyping</li>
-                  <li>Service &amp; experience design</li>
-                  <li>Storytelling &amp; concept communication</li>
-                </ul>
-              </div>
-              <div>
-                <p className="section-eyebrow">Tools &amp; making</p>
-                <p>Digital prototyping · Arduino · Sensors · Motors · Basic programming</p>
-              </div>
-              <div>
-                <p className="section-eyebrow">Approach</p>
-                <p>Research-driven, iterative and experiment-led—learning by building, testing and refining.</p>
-              </div>
-            </div>
+            <p className="about-note about-note--research">Curious about<br /><strong>people + behaviour</strong></p>
+            <p className="about-note about-note--study">Design + Marketing<br /><span>FLAME University</span></p>
+            <p className="about-note about-note--strategy">Research<br />+ strategy</p>
+            <p className="about-note about-note--making">Arduino · sensors<br />physical computing</p>
+            <p className="about-note about-note--story">Making ideas<br />feel tangible.</p>
+            <p className="about-note about-note--place">Mumbai / Pune</p>
+            <svg className="about-story__scribbles" viewBox="0 0 1000 620" aria-hidden="true">
+              <path d="M155 176c80-34 137-18 207 35" />
+              <path d="M737 166c-72 14-119 38-178 76" />
+              <path d="M174 406c78-20 133-15 190 20" />
+              <path d="M824 399c-76-18-142-8-212 28" />
+              <path d="M225 275c-18 2-33 13-39 30m-7-2-14 8m22 4-11 13" />
+              <path d="M793 286c19 3 34 16 39 34m5-2 14 8m-22 4 11 13" />
+            </svg>
+          </div>
+          <div className="about-story__footer">
+            <p>I’m Khushii Mehta, a multidisciplinary design student who brings research, technology and storytelling together to make ideas useful, understandable and human.</p>
+            <p>Research <span>→</span> Make <span>→</span> Test</p>
           </div>
         </div>
       </section>
