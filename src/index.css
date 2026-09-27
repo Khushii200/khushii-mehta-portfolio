@@ -93,10 +93,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .studio-nav__links a { padding: 0.65rem 0.8rem; border-radius: var(--radius-sm); }
 .studio-nav__time { padding: 0.58rem 0.8rem; color: var(--color-text-faint); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-variant-numeric: tabular-nums; letter-spacing: 0.08em; }
 .studio-stage { width: min(100%, 1440px); height: calc(100svh - var(--nav-height)); min-height: 35rem; margin-inline: auto; position: relative; overflow: hidden; isolation: isolate; }
-.studio-stage__title { position: absolute; top: clamp(2.5rem, 8vh, 5.5rem); left: 50%; z-index: 1; width: min(70%, 61rem); margin: 0; color: var(--color-text); font-size: clamp(5rem, 13.8vw, 11.5rem); font-weight: 900; letter-spacing: -0.065em; line-height: 0.77; text-align: center; text-transform: uppercase; transform: translateX(-50%); }
+.studio-stage__title { position: absolute; top: clamp(3rem, 9vh, 6rem); left: 50%; z-index: 1; width: min(74%, 62rem); min-height: 2.1em; margin: 0; color: var(--color-text); font-size: clamp(4.25rem, 10.6vw, 9.25rem); font-weight: 900; letter-spacing: -0.065em; line-height: 0.82; text-align: center; text-transform: uppercase; transform: translateX(-50%); }
 .studio-stage__title span { display: block; }
+.studio-stage__title span:first-child { font-size: 0.52em; letter-spacing: -0.045em; }
 .studio-stage__title span:last-child { margin-left: 0.05em; }
-.studio-character { position: absolute; top: clamp(4.5rem, 13vh, 7rem); left: 75%; z-index: 3; width: 370px; height: 445px; transform: translateX(-50%) rotate(2.5deg); transform-origin: 50% 100%; transition: transform 240ms ease; }
+.studio-stage__dynamic-word { min-width: 10ch; margin-left: 0 !important; font-size: 0.82em; letter-spacing: -0.075em; animation: hero-word-settle 480ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes hero-word-settle { from { opacity: 0; transform: translateY(0.3em); } to { opacity: 1; transform: translateY(0); } }
+.studio-character { position: absolute; top: clamp(5rem, 14vh, 7.5rem); left: 75%; z-index: 3; width: 340px; height: 410px; transform: translateX(-50%) rotate(2.5deg); transform-origin: 50% 100%; transition: transform 240ms ease; }
 .studio-character:hover { transform: translateX(-50%) translateY(-7px) rotate(-1.5deg); }
 .studio-character > div, .studio-character canvas { width: 100% !important; height: 100% !important; }
 .studio-stage__intro { position: absolute; bottom: clamp(11rem, 31vh, 15rem); left: 50%; z-index: 4; width: min(90%, 27rem); color: var(--color-text-soft); font-size: clamp(0.84rem, 1vw, 0.96rem); line-height: 1.48; text-align: center; transform: translateX(-50%); }
@@ -410,7 +413,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 @media (max-width: 960px) {
   .studio-stage { min-height: 31rem; }
-  .studio-stage__title { width: min(76%, 47rem); font-size: clamp(4.75rem, 12vw, 7.75rem); }
+  .studio-stage__title { width: min(80%, 47rem); font-size: clamp(4rem, 10vw, 7rem); }
   .studio-character { top: clamp(3rem, 12vh, 5rem); left: 75%; width: 320px; height: 385px; }
   .section-header__row { align-items: flex-start; flex-direction: column; }
   .project-folder-step {
@@ -444,8 +447,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .studio-nav__links a { padding-inline: 0.4rem; font-size: 0.55rem; letter-spacing: 0.11em; }
   .studio-nav__time { display: none; }
   .studio-stage { height: auto; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 2.4rem 1.15rem 2rem; overflow: visible; }
-  .studio-stage__title { position: relative; top: auto; left: auto; width: 100%; margin: 0; font-size: clamp(3.5rem, 13vw, 4.15rem); line-height: 0.77; transform: none; }
-  .studio-stage__title span:last-child { margin-left: 0.05em; }
+  .studio-stage__title { position: relative; top: auto; left: auto; width: 100%; min-height: 0; margin: 0; font-size: clamp(3rem, 11vw, 3.65rem); line-height: 0.85; transform: none; }
+  .studio-stage__title span:last-child { margin-left: 0; }
+  .studio-stage__dynamic-word { min-width: 0; font-size: 0.76em; }
   .studio-stage__intro { position: relative; bottom: auto; left: auto; order: 2; width: calc(100% - 2.3rem); max-width: 20rem; font-size: 0.9rem; text-align: left; transform: none; }
   .studio-stage__intro p { font-size: 0.86rem; line-height: 1.35; }
   .studio-character { position: relative; top: auto; left: auto; order: 3; width: 250px; height: 300px; margin: 0; transform: rotate(2deg); }

@@ -2439,7 +2439,7 @@ const App = () => {
         <div className="site-container about-story">
           <header className="about-story__header">
             <p className="section-eyebrow">About</p>
-            <h2>Get to know Khushii</h2>
+            <h2>Get to know me</h2>
           </header>
 
           <div className="about-story__stage">
