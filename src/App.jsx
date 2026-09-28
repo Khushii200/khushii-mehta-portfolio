@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import aboutMainPhoto from './assets/about-khushii-illustration.png';
 import raahiUserFlow from './assets/raahi-user-flow.png';
 import raahiTaskFlow from './assets/raahi-task-flow.png';
@@ -12,22 +12,17 @@ import raahiPreferenceScreens from './assets/raahi-preference-screens.png';
 import raahiPlanningTrip from './assets/raahi-planning-trip.png';
 import raahiHomePages from './assets/raahi-home-pages.png';
 import bsnlLogoAlt from './assets/bsnl-logo-alt.png';
+import bsnlVisual from './assets/bsnl-visual.webp';
+import raahiVisual from './assets/raahi-visual.webp';
+import voiaVisual from './assets/voia-visual.webp';
+import solarlinkVisual from './assets/solarlink-visual.webp';
+import ziptrripVisual from './assets/ziptrrip-visual.webp';
 import { Mail, Linkedin, Github, Instagram, Sparkles, ArrowUpRight, ArrowRight, ArrowLeft, ExternalLink, Lock, Calendar, User, Target, Search, Users, Zap, BarChart3, Lightbulb, ClipboardList, Smartphone, Globe, Shield, ZapOff, AlertCircle, TrendingDown, MessageSquare, LogOut, Eye, Ear, Heart, Brain } from 'lucide-react';
 import { LoadingExperience } from './components/entrance/LoadingExperience';
 import { WorkSection } from './components/work/WorkSection';
-
-// --- Custom Hooks ---
-const useMousePosition = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-  return mousePosition;
-};
+import { PencilCursor } from './components/cursor/PencilCursor';
+import { BsnlCaseStudy } from './components/case-study/BsnlCaseStudy';
+import { ZiptrripCaseStudy } from './components/case-study/ZiptrripCaseStudy';
 
 // --- Fun Doodle Components ---
 const ScribbleUnderline = () => (
@@ -42,22 +37,6 @@ const DoodleArrow = ({ className }) => (
   </svg>
 );
 
-const FloatingDoodle = ({ x, y }) => (
-  <div 
-    className="fixed pointer-events-none z-[60] opacity-40 text-white"
-    style={{ 
-      left: x, 
-      top: y, 
-      transform: 'translate(-50%, -50%) rotate(15deg)',
-      transition: 'transform 0.2s ease-out'
-    }}
-  >
-    <svg width="40" height="40" viewBox="0 0 40 40">
-      <path d="M20 5L22 15L32 17L22 19L20 29L18 19L8 17L18 15L20 5Z" fill="none" stroke="currentColor" strokeWidth="1" />
-    </svg>
-  </div>
-);
-
 const GrainOverlay = () => (
   <div className="fixed inset-0 z-[10001] pointer-events-none opacity-[0.08] mix-blend-overlay">
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -69,173 +48,18 @@ const GrainOverlay = () => (
   </div>
 );
 
-const CustomCursor = ({ hovering, label, status }) => {
-  const dotRef = useRef(null);
-  const containerRef = useRef(null);
-  const requestRef = useRef(null);
-  const mousePos = useRef({ x: 0, y: 0 });
-  const currentPos = useRef({ x: 0, y: 0 });
-  const dotCurrentPos = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      mousePos.current = { x: e.clientX, y: e.clientY };
-    };
-
-    const animate = () => {
-      const containerEasing = 0.12; 
-      const dotEasing = 0.35; 
-
-      currentPos.current.x += (mousePos.current.x - currentPos.current.x) * containerEasing;
-      currentPos.current.y += (mousePos.current.y - currentPos.current.y) * containerEasing;
-      
-      dotCurrentPos.current.x += (mousePos.current.x - dotCurrentPos.current.x) * dotEasing;
-      dotCurrentPos.current.y += (mousePos.current.y - dotCurrentPos.current.y) * dotEasing;
-
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${dotCurrentPos.current.x}px, ${dotCurrentPos.current.y}px, 0) translate(-50%, -50%) scale(${hovering ? 0 : 1})`;
-      }
-      if (containerRef.current) {
-        containerRef.current.style.transform = `translate3d(${currentPos.current.x}px, ${currentPos.current.y}px, 0) translate(-50%, -50%) scale(${hovering ? 1 : 0})`;
-      }
-
-      requestRef.current = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    requestRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(requestRef.current);
-    };
-  }, [hovering]);
-
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  if (isMobile) return null;
-
-  return (
-    <>
-      <div 
-        ref={containerRef}
-        className={`fixed top-0 left-0 z-[9999] pointer-events-none flex items-center justify-center whitespace-nowrap px-6 py-3 rounded-2xl shadow-2xl border will-change-transform transition-colors duration-300 ${
-          status === 'locked' 
-          ? 'bg-[var(--color-accent)] border-[var(--color-accent)] text-white'
-          : 'bg-white border-zinc-200 text-black'
-        }`}
-      >
-        <div className="flex items-center gap-3">
-          {status === 'locked' && <Lock size={14} className="animate-pulse" />}
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-            {label}
-          </span>
-          {status !== 'locked' && <ArrowUpRight size={14} />}
-        </div>
-      </div>
-    </>
-  );
-};
-
-const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
+const ProjectDetail = ({ project, onBack, nextProject, onOpenProject }) => {
   const isBSNL = project.id === 1;
   const isRaahi = project.id === 2;
   const isVoia = project.id === 3;
   const isSolar = project.id === 4;
-
-  const personas = [
-    {
-      name: "Meenakshi Iyer (60–70)",
-      role: "The Older Loyalist",
-      location: "Coimbatore",
-      description: "Tech comfort: low. Current SIM: BSNL. Background: retired school principal.",
-      needs: ["Wants large font and Tamil voice support", "Prefers “talk to a person” or WhatsApp voice-based help", "Simple, honest plans with long validity"],
-      painPoint: "Confused by complex app UI and digital recharge; needs help with bill payments and doesn’t understand data plans.",
-      icon: <Shield size={24} />
-    },
-    {
-      name: "Riya Sharma (18–24)",
-      role: "The Gen Z Skeptic",
-      location: "Pune",
-      description: "Tech comfort: very high (lives online). Current SIM: Airtel. Background: design college student.",
-      needs: ["Customizable plans, UPI payments, dark mode", "Wants meme-savvy brands, clean UI, and fast service", "Low-cost student plans with OTT bundles and night boosters"],
-      painPoint: "Thinks BSNL is outdated/uncool and assumes it’s only for parents or remote areas.",
-      icon: <Globe size={24} />
-    },
-    {
-      name: "Shivram Mahato (30–45)",
-      role: "The Rural First-Time User",
-      location: "Bihar",
-      description: "Tech comfort: basic (uses voice, some YouTube in Hindi). Current SIM: BSNL. Background: small-scale farmer.",
-      needs: ["Voice-first interface in Hindi/Bhojpuri", "WhatsApp-based support and recharge", "Simple daily/weekly plans and local offers"],
-      painPoint: "Doesn’t understand English app content; needs help to recharge and sometimes doesn’t know when the pack ends.",
-      icon: <Zap size={24} />
-    }
-  ];
-
-  const journeySteps = [
-    {
-      phase: "Recharge Awareness",
-      action: "Meena doesn’t get notified when her plan is about to expire.",
-      touchpoint: "Phone stops working (calls/data).",
-      painPoint: "No proactive reminders.",
-      emotion: "Frustrated",
-      emotionIcon: "😣",
-      icon: <Search size={20} />
-    },
-    {
-      phase: "Recharge Search",
-      action: "Asks a neighbor/shopkeeper what recharge plan is available.",
-      touchpoint: "Local kirana or recharge vendor.",
-      painPoint: "No clarity on options; vendor chooses for her.",
-      emotion: "Dependent",
-      emotionIcon: "🥺",
-      icon: <Users size={20} />
-    },
-    {
-      phase: "Recharge Payment",
-      action: "Pays in cash or asks someone to pay online via their phone.",
-      touchpoint: "Physical shop or family member’s help.",
-      painPoint: "No direct digital access or transparency.",
-      emotion: "Helplessness",
-      emotionIcon: "😔",
-      icon: <Smartphone size={20} />
-    },
-    {
-      phase: "Plan Usage",
-      action: "Uses BSNL network without tracking data/call usage.",
-      touchpoint: "Phone interface (no app usage).",
-      painPoint: "No idea about benefits or usage status.",
-      emotion: "Unaware",
-      emotionIcon: "😶",
-      icon: <Zap size={20} />
-    },
-    {
-      phase: "Customer Service",
-      action: "Experiences a network issue; calls BSNL helpline.",
-      touchpoint: "IVR system or long wait call center.",
-      painPoint: "Hard to navigate, language barrier, no resolution.",
-      emotion: "Angry/Ignored",
-      emotionIcon: "😠",
-      icon: <MessageSquare size={20} />
-    },
-    {
-      phase: "Retention/Exit",
-      action: "A private player (like Jio) offers a better deal.",
-      touchpoint: "Peer influence or phone shop.",
-      painPoint: "No loyalty benefits or compelling reason to stay.",
-      emotion: "Willingness to Switch",
-      emotionIcon: "🙂",
-      icon: <LogOut size={20} />
-    }
-  ];
+  const isZiptrrip = project.id === 5;
 
   return (
-    <div className="project-detail fixed inset-0 z-[200] overflow-y-auto animate-fade-in cursor-default md:cursor-none">
+    <div className="project-detail fixed inset-0 z-[200] overflow-y-auto animate-fade-in">
       <nav className="project-detail__nav sticky top-0 w-full px-6 md:px-12 py-6 flex justify-between items-center backdrop-blur-xl z-[210]">
         <button 
           onClick={onBack}
-          onMouseEnter={() => { setHovering(true); setCursorLabel("GO BACK"); }}
-          onMouseLeave={() => setHovering(false)}
           className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] hover:opacity-60 transition-opacity"
         >
           <ArrowLeft size={16} /> Close Project
@@ -243,6 +67,11 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
         <div className="text-[10px] font-mono opacity-40 uppercase tracking-widest">{project.number} / {project.category}</div>
       </nav>
 
+      {isBSNL ? (
+        <BsnlCaseStudy project={project} nextProject={nextProject} onOpenProject={onOpenProject} />
+      ) : isZiptrrip ? (
+        <ZiptrripCaseStudy project={project} nextProject={nextProject} onOpenProject={onOpenProject} />
+      ) : (
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-20">
         <header className="mb-24">
           <h1 className="text-[12vw] md:text-[8vw] font-black uppercase leading-[0.8] tracking-tighter mb-12">
@@ -268,7 +97,7 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
              <Calendar className="mb-6 text-zinc-500" size={28} />
              <h4 className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Timeline</h4>
              <p className="text-sm font-bold uppercase tracking-wider">
-               {isRaahi || isVoia ? "2 months" : isSolar ? "" : "12 May 2025 — 12 July 2025"}
+               {isRaahi || isVoia ? "2 months" : isSolar ? "" : isBSNL ? "12 May 2025 — 12 July 2025" : project.year}
              </p>
           </div>
           <div className="p-10 border border-white/10 rounded-[50px] bg-white/[0.03] backdrop-blur-sm">
@@ -281,7 +110,9 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
                  ? ""
                  : isSolar
                  ? "Service Design · Research · Insight Synthesis · Journey Mapping · Concept & Experience Design"
-                 : "Design Strategist"}
+                 : isBSNL
+                 ? "Design Strategist"
+                 : project.role}
              </p>
           </div>
           <div className="p-10 border border-white/10 rounded-[50px] bg-white/[0.03] backdrop-blur-sm">
@@ -296,7 +127,9 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
                  ? ""
                  : isSolar
                  ? "Service Design · Sustainability · Systems Thinking"
-                 : "Repositioning & B2C Strategy"}
+                 : isBSNL
+                 ? "Repositioning & B2C Strategy"
+                 : project.category}
              </p>
           </div>
           {(isSolar || isRaahi || isVoia) && (
@@ -314,928 +147,7 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
           )}
         </div>
 
-        {isBSNL ? (
-          <div className="space-y-40">
-            {/* Where BSNL Stands Today */}
-            <section className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              <div className="lg:col-span-4">
-                <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-4">
-                  <span className="w-8 h-1 bg-white inline-block"></span> Where BSNL Stands Today
-                </h2>
-              </div>
-              <div className="lg:col-span-8">
-                <p className="text-xl md:text-2xl font-medium text-zinc-400 leading-snug">
-                  Bharat Sanchar Nigam Limited (BSNL) is India’s state-owned telecom operator with unmatched rural reach and a legacy of trust built over decades. Despite competitive pricing and national infrastructure, BSNL has steadily lost relevance in urban and younger markets due to weak digital presence, fragmented experiences, and inconsistent brand communication.
-                </p>
-              </div>
-            </section>
-
-            {/* Problem Statement */}
-            <section className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              <div className="lg:col-span-4">
-                <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-4">
-                  <span className="w-8 h-1 bg-white inline-block"></span> The Problem
-                </h2>
-              </div>
-              <div className="lg:col-span-8">
-                <p className="text-2xl md:text-3xl font-medium text-white leading-snug">
-                  BSNL isn’t failing because people forgot it — it’s failing because they remember it as <span className="text-zinc-500 italic">outdated, slow, and disconnected</span>. 
-                </p>
-                <p className="text-lg text-zinc-400 mt-8 leading-relaxed">
-                  For Gen Z and digital-first users, it doesn’t even register as a telecom option — not due to price or reach, but because it lacks visibility, personalization, and a relatable brand voice.
-                </p>
-              </div>
-            </section>
-
-            {/* Research Approach */}
-            <section className="space-y-6">
-              <div className="max-w-3xl">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">Research Approach</h2>
-              </div>
-              <div className="relative rounded-[28px] border border-white/10 bg-white/[0.02] px-6 md:px-10 py-10">
-                <div className="hidden md:block absolute left-10 right-10 top-[54px] h-px bg-white/10"></div>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-6 relative z-10">
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 text-xs font-black flex items-center justify-center">01</div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-white">Secondary Research</h3>
-                      <p className="text-sm text-zinc-300 mt-2">
-                        TRAI reports, telecom &amp; fintech trends, AI adoption, cultural frameworks
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 text-xs font-black flex items-center justify-center">02</div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-white">Competitor Analysis</h3>
-                      <p className="text-sm text-zinc-300 mt-2">
-                        Airtel, Jio, Vi (India) + Verizon, AT&amp;T (global references)
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 text-xs font-black flex items-center justify-center">03</div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-white">Digital Listening</h3>
-                      <p className="text-sm text-zinc-300 mt-2">
-                        200+ Play Store reviews to surface real user friction
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 text-xs font-black flex items-center justify-center">04</div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-white">User Interviews</h3>
-                      <p className="text-sm text-zinc-300 mt-2">
-                        BSNL and non‑BSNL users across age groups
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 text-xs font-black flex items-center justify-center">05</div>
-                    <div>
-                      <h3 className="text-sm font-black uppercase tracking-widest text-white">Synthesis</h3>
-                      <p className="text-sm text-zinc-300 mt-2">
-                        Personas and journey maps across recharge, usage, and support
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Competitive Benchmarking */}
-            <section className="py-20 bg-white/[0.02] -mx-6 md:-mx-12 px-6 md:px-12 rounded-[100px] border-y border-white/5">
-               <div className="mb-20">
-                 <h2 className="text-5xl font-black uppercase tracking-tighter mb-4">Competitive Benchmarking</h2>
-                 <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold">Understanding the Telecom Landscape</p>
-               </div>
-               
-               <div className="overflow-x-auto">
-                 <table className="w-full text-left border-collapse min-w-[1100px]">
-                   <thead>
-                     <tr className="border-b border-white/10 text-[10px] uppercase font-black tracking-widest text-zinc-500">
-                       <th className="pb-8 pl-6 pr-6">Player</th>
-                       <th className="pb-8 pr-6">Tech</th>
-                       <th className="pb-8 pr-6">Pricing</th>
-                       <th className="pb-8 pr-6">Ecosystem</th>
-                       <th className="pb-8 pr-6">Brand Voice</th>
-                       <th className="pb-8 pr-6">Dominance</th>
-                       <th className="pb-8 pr-6">Market Share (as of 2024)</th>
-                     </tr>
-                   </thead>
-                   <tbody className="divide-y divide-white/5">
-                     <tr className="group">
-                       <td className="py-10 pl-6 pr-6">
-                         <div className="font-black text-xl text-white">JIO</div>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Extensive 4G/5G</p>
-                        </td>
-                        <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Aggressive Pricing</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">JioCinema, Games, AI</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Youthful & Innovative</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <span className="px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-[10px] font-black uppercase tracking-widest">Urban & Tier-2</span>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-xs text-zinc-300 font-bold uppercase tracking-widest">~50–52%</p>
-                       </td>
-                     </tr>
-                     <tr className="group">
-                       <td className="py-10 pl-6 pr-6">
-                         <div className="font-black text-xl text-white">AIRTEL</div>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">High Consistency</p>
-                        </td>
-                        <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Balanced Pricing</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Wynk, Thanks, Xstream</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Premium & Urban</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <span className="px-4 py-2 bg-red-500/10 text-red-400 rounded-full text-[10px] font-black uppercase tracking-widest">Urban-Focused</span>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-xs text-zinc-300 font-bold uppercase tracking-widest">~29–30%</p>
-                       </td>
-                     </tr>
-                     <tr className="group">
-                       <td className="py-10 pl-6 pr-6">
-                         <div className="font-black text-xl text-white">VODAFONE IDEA (Vi)</div>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Good 4G Coverage</p>
-                        </td>
-                        <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Value-Added Plans</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Vi Movies & TV, Music</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-sm font-bold">Trendy & Vibrant</p>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <span className="px-4 py-2 bg-purple-500/10 text-purple-400 rounded-full text-[10px] font-black uppercase tracking-widest">Youth-Centric</span>
-                       </td>
-                       <td className="py-10 pr-6">
-                         <p className="text-xs text-zinc-300 font-bold uppercase tracking-widest">~13–14%</p>
-                       </td>
-                     </tr>
-                   </tbody>
-                 </table>
-               </div>
-            </section>
-
-            {/* Insight From the Market */}
-            <section className="space-y-8 py-12">
-              <div className="max-w-4xl">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">Insight From the Market</h2>
-              </div>
-              <div className="max-w-3xl space-y-5 text-lg md:text-xl text-zinc-300 leading-relaxed">
-                <p>
-                  The competitive landscape revealed a clear pattern — private players like Jio, Airtel, and Vi are competing on speed, pricing, and bundled ecosystems.
-                </p>
-                <p>
-                  However, BSNL’s challenge is fundamentally different.
-                </p>
-                <p>
-                  It is not losing because it lacks infrastructure or affordability — it is losing because it lacks perceived relevance and usability.
-                </p>
-              </div>
-              <div className="-mx-6 md:-mx-12">
-                <div className="mt-2 border border-white/10 rounded-[24px] bg-white/[0.03] p-6 md:p-8 text-center">
-                  <p className="text-xl md:text-2xl text-zinc-200 font-medium leading-snug">
-                    <span className="font-normal">
-                      The opportunity is not to compete head‑on, but to reposition BSNL around what competitors are not solving:{" "}
-                    </span>
-                    <span className="whitespace-nowrap font-bold">clarity, trust, and accessibility.</span>
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Persona Section */}
-            <section className="space-y-10">
-              <div className="max-w-4xl space-y-4">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">Who BSNL Is Serving</h2>
-                <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold">
-                  Three distinct user groups reveal that BSNL’s challenge isn’t reach — it’s relevance, usability, and perception.
-                </p>
-              </div>
-
-              <div className="space-y-12">
-                <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-10 pb-12 border-b border-white/10">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-white">Meenakshi Iyer</h3>
-                      <p className="text-sm text-zinc-400">60–70 | The Older Loyalist</p>
-                    </div>
-                    <p className="text-sm md:text-base text-zinc-400">
-                      Retired school principal<br />
-                      Uses BSNL out of trust<br />
-                      Low tech comfort
-                    </p>
-                    <div>
-                      <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Needs</div>
-                      <p className="text-sm md:text-base text-zinc-300">Simple plans, human support, clarity</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Key Insight</div>
-                    <p className="text-lg md:text-2xl text-zinc-200 font-semibold leading-snug">
-                      “If BSNL becomes easier to use, they won’t leave — they’ll advocate.”
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-10 pb-12 border-b border-white/10">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-white">Riya Sharma</h3>
-                      <p className="text-sm text-zinc-400">18–24 | The Gen Z Skeptic</p>
-                    </div>
-                    <p className="text-sm md:text-base text-zinc-400">
-                      Design student, always online<br />
-                      Uses Airtel/Jio<br />
-                      Perception‑driven
-                    </p>
-                    <div>
-                      <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Needs</div>
-                      <p className="text-sm md:text-base text-zinc-300">Speed, personalization, modern UX</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Key Insight</div>
-                    <p className="text-lg md:text-2xl text-zinc-200 font-semibold leading-snug">
-                      “They don’t reject BSNL for price — they reject it for perception.”
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-10">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-white">Shivram Mahato</h3>
-                      <p className="text-sm text-zinc-400">30–45 | Rural First‑Time User</p>
-                    </div>
-                    <p className="text-sm md:text-base text-zinc-400">
-                      Small‑scale farmer<br />
-                      Uses voice + basic apps<br />
-                      Relies on others
-                    </p>
-                    <div>
-                      <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Needs</div>
-                      <p className="text-sm md:text-base text-zinc-300">Guided experience, local language, assistance</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Key Insight</div>
-                    <p className="text-lg md:text-2xl text-zinc-200 font-semibold leading-snug">
-                      “Access exists — understanding doesn’t.”
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Empathy Map Section */}
-            <section className="space-y-16">
-               <div className="max-w-3xl">
-                  <h2 className="text-4xl font-black uppercase tracking-tighter">Empathy Map</h2>
-                  <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold mt-2">Decoding the User's Internal & External World</p>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-[48px] overflow-hidden transform scale-[0.92] origin-top -mb-28">
-                 {/* SAYS */}
-                 <div className="p-8 bg-[#070707] flex flex-col items-center text-center group">
-                    <MessageSquare size={32} className="mb-6 text-zinc-500 group-hover:text-white transition-colors" />
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-6">Says</h4>
-                    <div className="flex flex-wrap justify-center gap-3">
-                      <div className="sticky-note sticky-note-purple">"Bharat, ₹199 ka data chahiye"</div>
-                      <div className="sticky-note sticky-note-purple">"Beta, tu hi recharge kar de."</div>
-                      <div className="sticky-note sticky-note-pink">Forgets renewal dates, gets surprised by balance expiry.</div>
-                      <div className="sticky-note sticky-note-pink">Feels proud of BSNL when told it’s secure and Indian.</div>
-                      <div className="sticky-note sticky-note-lilac">Uses WhatsApp, voice notes, YouTube — not the app.</div>
-                    </div>
-                 </div>
-
-                 {/* THINKS */}
-                 <div className="p-8 bg-[#070707] flex flex-col items-center text-center group">
-                    <Brain size={32} className="mb-6 text-zinc-500 group-hover:text-white transition-colors" />
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-6">Thinks</h4>
-                    <div className="flex flex-wrap justify-center gap-3">
-                      <div className="sticky-note sticky-note-green">"I love the idea of BSNL... but the experience is too clunky."</div>
-                      <div className="sticky-note sticky-note-green">"I don’t want to be cheated — just give me clarity."</div>
-                      <div className="sticky-note sticky-note-sage">"I’m scared I’ll choose the wrong plan or press the wrong button."</div>
-                      <div className="sticky-note sticky-note-sage">"I wish someone could just tell me what’s right for me — in my language."</div>
-                    </div>
-                 </div>
-
-                 {/* SEES */}
-                 <div className="p-8 bg-[#070707] flex flex-col items-center text-center group">
-                   <Eye size={32} className="mb-6 text-zinc-500 group-hover:text-white transition-colors" />
-                   <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-6">Sees</h4>
-                    <div className="flex flex-wrap justify-center gap-3">
-                      <div className="sticky-note sticky-note-peach">Too many options; confusing GBs, validity dates, top‑up types.</div>
-                      <div className="sticky-note sticky-note-peach">Private players innovating, BSNL lagging.</div>
-                      <div className="sticky-note sticky-note-rose">Legacy government interfaces — outdated, dense, cluttered.</div>
-                      <div className="sticky-note sticky-note-rose">Jio/Airtel’s sleek campaigns, influencer content, OTT bundles.</div>
-                      <div className="sticky-note sticky-note-peach">Shopkeepers or family members doing tasks for them.</div>
-                    </div>
-                 </div>
-
-                 {/* HEARS */}
-                 <div className="p-8 bg-[#070707] flex flex-col items-center text-center group">
-                   <Ear size={32} className="mb-6 text-zinc-500 group-hover:text-white transition-colors" />
-                   <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-6">Hears</h4>
-                    <div className="flex flex-wrap justify-center gap-3">
-                      <div className="sticky-note sticky-note-blue">"BSNL is for rural India / old people."</div>
-                      <div className="sticky-note sticky-note-blue">"Use GPay or PhonePe — it’s easier."</div>
-                      <div className="sticky-note sticky-note-sky">Misinformation like "BSNL doesn’t work anymore."</div>
-                      <div className="sticky-note sticky-note-sky">Jargon like "booster pack," "FUP," "KYC incomplete" — with no explanation.</div>
-                    </div>
-                 </div>
-               </div>
-            </section>
-
-            {/* Gain & Pain Section */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-12 -mt-56">
-              <div className="space-y-6">
-                <h3 className="text-2xl font-black uppercase tracking-[0.2em]">Gain <span className="text-zinc-500 tracking-normal">(User Needs)</span></h3>
-                <ul className="list-disc pl-6 space-y-3 text-sm md:text-base text-zinc-300">
-                  <li>Recharge/Bill help in 2 taps or 1 voice command.</li>
-                  <li>Interface in their mother tongue, with voice + visual prompts.</li>
-                  <li>Auto reminders for expiry, smart suggestions, simple comparisons.</li>
-                  <li>Humanized assistant (like “Bharat”) who knows preferences.</li>
-                  <li>“Don’t make it cool — make it calm, smart, and clear.”</li>
-                </ul>
-              </div>
-              <div className="space-y-6">
-                <h3 className="text-2xl font-black uppercase tracking-[0.2em]">Pain <span className="text-zinc-500 tracking-normal">(User Frustrations)</span></h3>
-                <ul className="list-disc pl-6 space-y-3 text-sm md:text-base text-zinc-300">
-                  <li>App UI is overwhelming or completely alien (esp. for seniors & rural users).</li>
-                  <li>Trust issues with online payments.</li>
-                  <li>Doesn’t understand plan differences, GBs, or voice minutes.</li>
-                  <li>Forced dependency on shopkeepers or family for basic actions.</li>
-                  <li>Missed opportunities: no proactive support, no regional UX, no “I get you” moment.</li>
-                </ul>
-              </div>
-            </section>
-
-            {/* As-Is Journey */}
-            <section className="space-y-16">
-               <div className="max-w-3xl">
-                  <h2 className="text-5xl font-black uppercase tracking-tighter">The As-Is Journey</h2>
-                  <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold mt-2">Current Friction Points & Emotional Map</p>
-               </div>
-
-               <div className="relative pt-20 pb-10">
-                  <div className="absolute top-[138px] left-0 w-full h-[1px] bg-white/10 hidden md:block"></div>
-                  <div className="grid grid-cols-1 md:grid-cols-6 gap-10 relative items-stretch">
-                     {journeySteps.map((step, idx) => (
-                       <div key={idx} className="relative group h-full">
-                          <div className="hidden md:flex absolute top-[40px] left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-zinc-800 border-2 border-white/20 z-10 group-hover:scale-150 group-hover:bg-white group-hover:border-white transition-all duration-300"></div>
-                          <div className="mb-8 md:text-center h-[120px] flex flex-col items-start md:items-center justify-end">
-                             <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/5 mb-8 -mt-2 md:mx-auto group-hover:bg-white group-hover:text-black transition-colors">
-                                {step.icon}
-                             </div>
-                             <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 whitespace-nowrap">Phase 0{idx+1}</h4>
-                             <h3 className="text-lg font-black uppercase tracking-tighter leading-tight whitespace-nowrap">{step.phase}</h3>
-                          </div>
-                          <div className="p-5 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300 h-[390px] flex flex-col gap-4">
-                             <div className="space-y-2">
-                                <h5 className="text-[11px] font-black uppercase tracking-widest text-zinc-600 mb-2">Typical Action</h5>
-                                <p className="text-[13px] font-bold text-zinc-300 leading-snug">{step.action}</p>
-                             </div>
-                             <div className="pt-3 border-t border-white/5 space-y-2">
-                                <h5 className="text-[11px] font-black uppercase tracking-widest text-zinc-600 mb-2">Touchpoint</h5>
-                                <p className="text-[13px] font-bold text-zinc-300 leading-snug">{step.touchpoint}</p>
-                             </div>
-                             <div className="pt-3 border-t border-white/5 space-y-2">
-                                <h5 className="text-[11px] font-black uppercase tracking-widest text-red-500/60 mb-2 flex items-center gap-2">
-                                   <AlertCircle size={10} /> Friction Point
-                                </h5>
-                                <p className="text-[13px] font-medium text-zinc-500 italic leading-snug">{step.painPoint}</p>
-                             </div>
-                             <div className="pt-3 border-t border-white/5 space-y-2 mt-auto">
-                                <h5 className="text-[11px] font-black uppercase tracking-widest text-zinc-600 mb-2">Emotion</h5>
-                                <div className="flex items-center gap-2 text-[13px] font-bold text-zinc-300 leading-snug">
-                                  <span className="text-base">{step.emotionIcon}</span>
-                                  <span>{step.emotion}</span>
-                                </div>
-                             </div>
-                          </div>
-                       </div>
-                     ))}
-                  </div>
-               </div>
-            </section>
-
-            {/* Reframing the Challenge */}
-            <section className="space-y-8 py-16">
-              <div className="max-w-4xl space-y-4">
-                <div className="h-px w-24 bg-white/10"></div>
-                <h2 className="text-5xl font-black uppercase tracking-tighter">Reframing the Challenge</h2>
-              </div>
-              <div className="max-w-3xl space-y-5 text-lg md:text-xl text-zinc-300 leading-relaxed">
-                <p>At this point, the problem was no longer just about telecom performance.</p>
-                <p>It became a question of experience design, perception, and access.</p>
-              </div>
-              <div className="max-w-3xl">
-                <p className="text-xl md:text-2xl text-zinc-200 font-semibold leading-snug">
-                  The goal shifted from improving services → to making BSNL understandable, usable, and relevant again.
-                </p>
-              </div>
-            </section>
-
-            {/* Strategic Core */}
-            <section className="space-y-24">
-               <div className="max-w-3xl">
-                 <h2 className="text-5xl font-black uppercase tracking-tighter mb-8 italic">"How Might We..."</h2>
-                 <p className="text-3xl font-medium text-zinc-300 leading-tight border-l-4 border-white pl-12">
-                   How might we craft a strategy that allows BSNL to build on its <span className="text-white">existing brand legacy</span> and appeal to a <span className="text-white">younger, metropolitan audience</span>?
-                 </p>
-               </div>
-            </section>
-
-            {/* From Insights to Direction */}
-            <section className="space-y-10">
-              <div className="max-w-4xl space-y-4">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">From Insights to Direction</h2>
-                <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold">
-                  Making sense of research before jumping into solutions
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-[1200px]">
-                <div className="h-full rounded-[18px] bg-white/[0.04] border border-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">What I Observed</h3>
-                  <ul className="mt-4 list-disc pl-6 space-y-2 text-sm md:text-base text-zinc-300 leading-relaxed">
-                    <li>Users trust BSNL, but hesitate to engage digitally</li>
-                    <li>Younger users don’t reject BSNL for price — but for perception</li>
-                    <li>Rural users have access, but lack clarity and confidence</li>
-                    <li>Experience feels fragmented across touchpoints</li>
-                  </ul>
-                </div>
-
-                <div className="h-full rounded-[18px] bg-white/[0.04] border border-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">What I Explored</h3>
-                  <ul className="mt-4 list-disc pl-6 space-y-2 text-sm md:text-base text-zinc-300 leading-relaxed">
-                    <li>Competing as a low‑cost telecom provider</li>
-                    <li>Becoming a youth‑first digital brand</li>
-                    <li>Doubling down as a rural‑first network</li>
-                    <li>Building a feature‑heavy digital ecosystem</li>
-                  </ul>
-                </div>
-
-                <div className="h-full rounded-[18px] bg-white/[0.04] border border-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">What I Ruled Out</h3>
-                  <ul className="mt-4 list-disc pl-6 space-y-2 text-sm md:text-base text-zinc-300 leading-relaxed">
-                    <li>Price competition is unsustainable against Jio</li>
-                    <li>Youth‑only focus ignores loyal users</li>
-                    <li>Digital‑first excludes low‑tech users</li>
-                    <li>Feature‑heavy increases complexity instead of solving it</li>
-                  </ul>
-                </div>
-
-                <div className="h-full rounded-[18px] bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/20 p-7 text-zinc-100 shadow-[0_12px_50px_rgba(0,0,0,0.5)]">
-                  <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">What I Chose</h3>
-                  <div className="mt-4 space-y-2 text-base md:text-lg leading-relaxed">
-                    <p>Instead of competing directly, BSNL should:</p>
-                    <p className="font-semibold text-white">“Lean into trust and simplify access”</p>
-                    <p className="text-zinc-300">Repositioning it as:</p>
-                    <p className="text-white font-medium">
-                      A human‑first, accessible telecom experience built on trust — not complexity
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="max-w-4xl">
-                <p className="text-xl md:text-2xl text-zinc-200 font-semibold leading-snug">
-                  This thinking led to the strategic pillars that guided all subsequent ideas.
-                </p>
-              </div>
-            </section>
-
-            {/* The Strategic Shift */}
-            <section className="space-y-10">
-              <div className="max-w-4xl space-y-4">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">The Strategic Shift</h2>
-                <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold">
-                  Translating insights into a clear direction for repositioning BSNL
-                </p>
-              </div>
-
-              <div className="max-w-[1100px] mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                  <div className="rounded-[20px] bg-white/[0.03] border border-white/10 p-7 text-left h-full flex flex-col">
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-3">Get</div>
-                    <p className="text-sm md:text-base text-zinc-400 leading-relaxed">
-                      Urban, digital‑first users and long‑time BSNL customers who are stuck in confusion, low visibility, and declining relevance — leading to passive usage or early rejection.
-                    </p>
-                  </div>
-
-                  <div className="rounded-[20px] bg-gradient-to-br from-white/[0.08] to-white/[0.03] border border-white/20 p-7 text-left shadow-[0_12px_40px_rgba(0,0,0,0.45)] h-full flex flex-col">
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300 mb-3">To</div>
-                    <p className="text-sm md:text-base text-zinc-200 leading-relaxed">
-                      A trusted, relevant, and actively chosen telecom that is simple to understand, easy to use, and culturally grounded.
-                    </p>
-                  </div>
-
-                  <div className="rounded-[20px] bg-white/[0.03] border border-white/10 p-7 text-left h-full flex flex-col">
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-3">By</div>
-                    <ul className="text-sm md:text-base text-zinc-400 leading-relaxed space-y-2 list-disc pl-5 md:pl-6 md:text-left">
-                      <li>Simplifying plans, pricing, and communication</li>
-                      <li>Introducing conversational, human‑first interfaces (like Bharat)</li>
-                      <li>Leveraging trust instead of competing on price</li>
-                      <li>Designing for real India across languages and access levels</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="hidden md:flex items-center justify-center gap-4 mt-4 text-zinc-600 text-xs font-black uppercase tracking-[0.4em]">
-                  <span>Get</span>
-                  <span className="text-zinc-700">→</span>
-                  <span>To</span>
-                  <span className="text-zinc-700">→</span>
-                  <span>By</span>
-                </div>
-              </div>
-            </section>
-
-            {/* Ideations */}
-            <section className="space-y-10">
-              <div className="max-w-4xl space-y-4">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">Ideations</h2>
-                <p className="text-xl md:text-2xl text-zinc-200 leading-relaxed font-semibold">
-                  “BSNL doesn’t need to become Airtel or Jio. It needs to become BSNL 2.0 — smart, grounded, and human‑first.”
-                </p>
-                <p className="text-sm md:text-base text-zinc-400">
-                  <span className="font-black text-zinc-200">Problem:</span> Low visibility + outdated perception
-                </p>
-                <p className="text-sm md:text-base text-zinc-400">
-                  The idea was to modernize BSNL without erasing what already makes it valuable.
-                </p>
-              </div>
-
-              <div className="rounded-[48px] border border-white/10 bg-white/[0.02] p-8 md:p-12 space-y-10">
-                <div className="max-w-4xl">
-                  <div className="p-8 md:p-10 rounded-[32px] border border-white/10 bg-white/[0.04]">
-                    <div className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-400 mb-3">The core advantage</div>
-                    <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white mb-3">Trust</h3>
-                    <p className="text-base md:text-lg text-zinc-300 leading-relaxed">
-                      BSNL still holds trust, especially among legacy and regional users. This became the foundation of the repositioning strategy.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10 items-stretch">
-                    <div className="p-7 rounded-[28px] border border-white/10 bg-white/[0.03]">
-                      <div className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-400 mb-2">Make BSNL easier to use</div>
-                      <h4 className="text-xl font-black uppercase tracking-tight text-white mb-2">Tech</h4>
-                      <p className="text-sm md:text-base text-zinc-300 leading-relaxed">
-                        GenAI support, UX redesign, conversational journeys, and plan personalization.
-                      </p>
-                    </div>
-                    <div className="p-7 rounded-[28px] border border-white/10 bg-white/[0.03]">
-                      <div className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-400 mb-2">Make BSNL feel more relevant</div>
-                      <h4 className="text-xl font-black uppercase tracking-tight text-white mb-2">Tone</h4>
-                      <p className="text-sm md:text-base text-zinc-300 leading-relaxed">
-                        Speak Gen Z, stay Bharat through a modern but grounded brand voice.
-                      </p>
-                    </div>
-                    <div className="p-7 rounded-[28px] border border-white/10 bg-white/[0.03]">
-                      <div className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-400 mb-2">Make BSNL feel meant for someone</div>
-                      <h4 className="text-xl font-black uppercase tracking-tight text-white mb-2">Tribe</h4>
-                      <p className="text-sm md:text-base text-zinc-300 leading-relaxed">
-                        Focus on creators, students, loyalists, and underserved users instead of trying to appeal to everyone.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-sm md:text-base text-zinc-400">
-                  Together, these levers shaped a repositioning strategy that made BSNL more usable, visible, and culturally relevant.
-                </p>
-              </div>
-            </section>
-
-            {/* How the Strategy Translates */}
-            <section className="space-y-10">
-              <div className="max-w-4xl space-y-4">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">How the Strategy Translates</h2>
-                <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold">
-                  Each pillar drives a set of focused actions across product, communication, and distribution
-                </p>
-              </div>
-
-              <div className="max-w-[1100px] grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                <div className="rounded-[18px] bg-white/[0.04] border border-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Trust</div>
-                  <ul className="text-sm md:text-base text-zinc-300 leading-relaxed space-y-2 list-disc pl-5">
-                    <li>SIM unboxing, legacy storytelling</li>
-                    <li>“Your Data Stays in India” campaign</li>
-                    <li>Cybersecurity awareness series</li>
-                    <li>Social media activation</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-[18px] bg-white/[0.04] border border-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Tech</div>
-                  <ul className="text-sm md:text-base text-zinc-300 leading-relaxed space-y-2 list-disc pl-5">
-                    <li>Simplified plans + clear summaries</li>
-                    <li>Native language UI</li>
-                    <li>“Senior Mode” + voice interface</li>
-                    <li>Bharat (WhatsApp assistant)</li>
-                    <li>Spam control + proactive reminders</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-[18px] bg-white/[0.04] border border-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Tone</div>
-                  <ul className="text-sm md:text-base text-zinc-300 leading-relaxed space-y-2 list-disc pl-5">
-                    <li>Gen Z‑friendly but grounded communication</li>
-                    <li>Meme‑aware, culturally rooted storytelling</li>
-                    <li>Creator partnerships</li>
-                    <li>Regional content</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-[18px] bg-white/[0.04] border border-white/10 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Tribe</div>
-                  <ul className="text-sm md:text-base text-zinc-300 leading-relaxed space-y-2 list-disc pl-5">
-                    <li>Rural saleswomen + kirana partnerships</li>
-                    <li>Education bundles + student packs</li>
-                    <li>Port‑in offers targeting segments</li>
-                    <li>Device ecosystem (dongles + keypad phones)</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            {/* Strategy Classification: Cost vs Impact */}
-            <section className="space-y-10">
-              <div className="max-w-4xl">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">Strategy Classification: Cost v/s Impact</h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-[120px_1fr_1fr] gap-6 items-stretch">
-                <div className="hidden md:block"></div>
-                <div className="text-sm font-black uppercase tracking-widest text-zinc-500 text-center">Low Cost</div>
-                <div className="text-sm font-black uppercase tracking-widest text-zinc-500 text-center">High Cost</div>
-
-                <div className="hidden md:flex items-center justify-center text-sm font-black uppercase tracking-widest text-zinc-500">
-                  <span className="rotate-[-90deg] origin-center">Low Impact</span>
-                </div>
-                <div className="rounded-[18px] p-6 bg-[#b9c26a]/20 border border-[#b9c26a]/40 h-full">
-                  <ul className="space-y-2 text-sm text-zinc-200 list-disc pl-5">
-                    <li>Cybersecurity email series</li>
-                    <li>LinkedIn job hiring posts</li>
-                    <li>DND toggle features in app</li>
-                    <li>App-only spam blocker</li>
-                  </ul>
-                </div>
-                <div className="rounded-[18px] p-6 bg-[#a7c7ff]/20 border border-[#a7c7ff]/40 h-full">
-                  <ul className="space-y-2 text-sm text-zinc-200 list-disc pl-5">
-                    <li>Real-time doubt-solving with professional tutors</li>
-                    <li>Micro-loans for prepaid recharge</li>
-                    <li>BSNL marketplace inside the app</li>
-                    <li>Full OTT bundling (Disney+, Netflix, etc.)</li>
-                    <li>Loyalty programs with 3rd-party coupons (Amazon, Flipkart)</li>
-                  </ul>
-                </div>
-
-                <div className="hidden md:flex items-center justify-center text-sm font-black uppercase tracking-widest text-zinc-500">
-                  <span className="rotate-[-90deg] origin-center">High Impact</span>
-                </div>
-                <div className="rounded-[18px] p-6 bg-[#f2c49b]/25 border border-[#f2c49b]/50 h-full">
-                  <ul className="space-y-2 text-sm text-zinc-200 list-disc pl-5">
-                    <li>Social media storytelling (trust, unboxing, SIM legacy)</li>
-                    <li>Mascot introduction (Signal Singh)</li>
-                    <li>Regional festival offers</li>
-                    <li>“Your data stays in India” narrative</li>
-                    <li>Night data boosters for students</li>
-                    <li>Native language UI + “Senior Mode”</li>
-                    <li>Proactive WhatsApp support + recharge reminders</li>
-                    <li>Twitter + LinkedIn brand updates</li>
-                  </ul>
-                </div>
-                <div className="rounded-[18px] p-6 bg-[#ff9aa2]/20 border border-[#ff9aa2]/40 h-full">
-                  <ul className="space-y-2 text-sm text-zinc-200 list-disc pl-5">
-                    <li>BSNL Pay digital wallet + UPI gateway</li>
-                    <li>Online BSNL University</li>
-                    <li>AI financial advisor for telecom budgeting</li>
-                    <li>BSNL dongles & keypad phones with student bundles</li>
-                    <li>WhatsApp chatbot with voice, eKYC, plan optimization</li>
-                    <li>Creator partnerships, rural content grants</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            {/* Prototypes */}
-            <section className="py-10">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6">
-                  <h2 className="text-5xl font-black uppercase tracking-tighter">Prototypes</h2>
-                  <p className="text-lg md:text-xl text-zinc-300 leading-relaxed">
-                    These prototypes explore how the strategy translates into real user interactions and service experiences.
-                  </p>
-                  <p className="text-sm md:text-base text-zinc-400">
-                    “From strategy to experience — here’s how BSNL becomes usable”
-                  </p>
-                  <p className="text-sm text-zinc-400">
-                    Designed to simplify recharge, support, and onboarding journeys.
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    <a
-                      href="https://www.figma.com/design/eWPd5da2R0TAQfYtFP5dF8/BSNL-whatsapp-chatbot?node-id=0-1&t=LH8YBRd5JbNSFOC0-1"
-                      className="inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.3em] text-white hover:opacity-70 transition-opacity w-[520px] justify-between"
-                    >
-                      <span>Explore the full prototype on Figma</span>
-                      <ArrowRight size={16} className="shrink-0" />
-                    </a>
-                    <a
-                      href="https://www.figma.com/make/F5UjMEU9MOCOlV82DxlD6T/Khushi---Piyush-Collaboration-FM-BSNL-app--Copy-?t=34z5jtw7tpwiani2-1"
-                      className="inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.3em] text-white hover:opacity-70 transition-opacity w-[520px] justify-between"
-                    >
-                      <span>Explore the WhatsApp chatbot prototype on Figma</span>
-                      <ArrowRight size={16} className="shrink-0" />
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex justify-center lg:justify-end lg:pr-24">
-                  <div className="[perspective:1200px]">
-                    <div
-                      className="relative w-[260px] h-[520px] md:w-[300px] md:h-[600px] rounded-[40px] border border-white/25 ring-1 ring-white/10 bg-gradient-to-br from-white/[0.1] via-white/[0.04] to-white/[0.01] shadow-[0_30px_80px_rgba(0,0,0,0.65)]"
-                      style={{ transform: "rotateY(-10deg) rotateX(5deg)" }}
-                    >
-                      <div className="absolute inset-[10px] rounded-[32px] bg-white border border-zinc-200/80">
-                        <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-white via-white to-zinc-100/80"></div>
-                        <div className="absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.7),transparent_55%)]"></div>
-                        <div className="relative z-10 h-full w-full flex items-center justify-center">
-                          <img
-                            src={bsnlLogoAlt}
-                            alt="BSNL logo"
-                            className="w-48 h-48 object-contain drop-shadow-[0_0_20px_rgba(13,79,170,0.2)]"
-                          />
-                        </div>
-                      </div>
-                      <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-white/20"></div>
-                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-48 h-6 bg-black/60 blur-2xl"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Implementation Roadmap */}
-            <section className="space-y-10 pb-10">
-              <div className="max-w-4xl">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">
-                  Implementation Roadmap <span className="whitespace-nowrap">(24 Months)</span>
-                </h2>
-                <p className="text-zinc-500 uppercase text-[10px] tracking-[0.4em] font-bold mt-2">
-                  A phased rollout to transition BSNL from legacy perception to active relevance
-                </p>
-              </div>
-
-              <div className="relative">
-                <div className="hidden lg:block absolute left-6 right-6 top-1/2 -translate-y-1/2 h-px bg-white/10"></div>
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  <div className="p-7 rounded-[28px] border border-emerald-500/30 bg-white/[0.03]">
-                    <div className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-300 mb-2">
-                      Phase 1 — Visibility &amp; Trust
-                      <span className="block text-[10px] tracking-[0.25em] text-emerald-200 mt-1">(0–6 Months)</span>
-                    </div>
-                    <p className="text-sm text-zinc-300 leading-relaxed mb-4">
-                      Make BSNL visible again and reintroduce what it stands for
-                    </p>
-                    <ul className="text-sm text-zinc-300 space-y-2 list-disc pl-5">
-                      <li>Trust‑led storytelling (SIM unboxing, legacy users, infrastructure)</li>
-                      <li>“Your Data Stays in India” campaign</li>
-                      <li>Cybersecurity awareness content</li>
-                      <li>Social media activation (Twitter, LinkedIn, Instagram)</li>
-                      <li>Regional + festive offers</li>
-                      <li>Basic proactive communication (SMS / WhatsApp reminders)</li>
-                    </ul>
-                    <p className="text-xs text-emerald-200 mt-4">
-                      Outcome: BSNL becomes visible, understandable, and top‑of‑mind again
-                    </p>
-                  </div>
-
-                  <div className="p-7 rounded-[28px] border border-yellow-500/30 bg-white/[0.03]">
-                    <div className="text-[11px] font-black uppercase tracking-[0.3em] text-yellow-300 mb-2">
-                      Phase 2 — Clarity &amp; Access
-                      <span className="block text-[10px] tracking-[0.25em] text-yellow-200 mt-1">(6–12 Months)</span>
-                    </div>
-                    <p className="text-sm text-zinc-300 leading-relaxed mb-4">
-                      Reduce friction and make BSNL easier to use
-                    </p>
-                    <ul className="text-sm text-zinc-300 space-y-2 list-disc pl-5">
-                      <li>Simplified plan structures + clear summaries</li>
-                      <li>Native language UI</li>
-                      <li>“Senior Mode” (large text, voice assistance, simplified flows)</li>
-                      <li>Night data boosters for students</li>
-                      <li>Spam control (DND toggle, spam blocker)</li>
-                      <li>Improved recharge and support flows</li>
-                    </ul>
-                    <p className="text-xs text-yellow-200 mt-4">
-                      Outcome: BSNL becomes easier to navigate and more reliable in everyday use
-                    </p>
-                  </div>
-
-                  <div className="p-7 rounded-[28px] border border-orange-500/30 bg-white/[0.03]">
-                    <div className="text-[11px] font-black uppercase tracking-[0.3em] text-orange-300 mb-2">
-                      Phase 3 — Adoption &amp; Expansion
-                      <span className="block text-[10px] tracking-[0.25em] text-orange-200 mt-1">(12–18 Months)</span>
-                    </div>
-                    <p className="text-sm text-zinc-300 leading-relaxed mb-4">
-                      Drive adoption and create stronger reasons to choose BSNL
-                    </p>
-                    <ul className="text-sm text-zinc-300 space-y-2 list-disc pl-5">
-                      <li>Bharat (WhatsApp assistant for recharge, support, plans)</li>
-                      <li>BSNL Pay (UPI, cashback, low‑data payments)</li>
-                      <li>Education bundles + BSNL University</li>
-                      <li>Rural distribution (kirana + assisted onboarding)</li>
-                      <li>Port‑in offers targeting competitor users</li>
-                    </ul>
-                    <p className="text-xs text-orange-200 mt-4">
-                      Outcome: BSNL becomes easier to adopt and more useful in daily life
-                    </p>
-                  </div>
-
-                  <div className="p-7 rounded-[28px] border border-red-500/30 bg-white/[0.03]">
-                    <div className="text-[11px] font-black uppercase tracking-[0.3em] text-red-300 mb-2">
-                      Phase 4 — Ecosystem &amp; Retention
-                      <span className="block text-[10px] tracking-[0.25em] text-red-200 mt-1">(18–24 Months)</span>
-                    </div>
-                    <p className="text-sm text-zinc-300 leading-relaxed mb-4">
-                      Build long‑term engagement and sustained relevance
-                    </p>
-                    <ul className="text-sm text-zinc-300 space-y-2 list-disc pl-5">
-                      <li>AI‑based plan recommendations + financial advisor</li>
-                      <li>BSNL marketplace (services + add‑ons)</li>
-                      <li>OTT bundling partnerships</li>
-                      <li>Loyalty programs + rewards ecosystem</li>
-                      <li>Creator partnerships + regional content</li>
-                    </ul>
-                    <p className="text-xs text-red-200 mt-4">
-                      Outcome: BSNL evolves into a connected service ecosystem
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-sm md:text-base text-zinc-400">
-                This roadmap focuses on rebuilding perception first, then improving usability, and finally expanding into a long‑term ecosystem.
-              </p>
-            </section>
-
-            {/* Future Steps & Learnings */}
-            <section className="space-y-10 pb-10">
-              <div className="max-w-4xl">
-                <h2 className="text-5xl font-black uppercase tracking-tighter">Future Steps & Learnings</h2>
-              </div>
-              <div className="max-w-4xl space-y-10 text-lg md:text-xl text-zinc-300 leading-relaxed">
-                <div>
-                  <h3 className="text-xl font-black uppercase tracking-widest text-zinc-100 mb-4">Future Steps:</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Conduct usability testing with Gen Z, rural, and senior user groups</li>
-                    <li>Build a working prototype of the WhatsApp bot and BSNL “Bharat” experience</li>
-                    <li>Collaborate with the tech team to pilot MVP features (e.g., student packs, chat‑based recharge)</li>
-                    <li>Roll out localized campaigns with on‑ground partnerships in Tier 2/3 towns</li>
-                    <li>Define KPIs to measure retention, NPS, and activation</li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="text-xl font-black uppercase tracking-widest text-zinc-100 mb-4">Learnings:</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Strategy is not about flash — it’s about clarity, empathy, and fit</li>
-                    <li>BSNL doesn’t need to become like others — it needs to become more like itself</li>
-                    <li>Cultural grounding + tech intuition is the key to long‑term revival</li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-          </div>
-        ) : isRaahi ? (
+        {isRaahi ? (
           <div className="space-y-32">
             {/* Setting the Stage */}
             <section className="space-y-8">
@@ -2319,16 +1231,13 @@ const ProjectDetail = ({ project, onBack, setHovering, setCursorLabel }) => {
           </button>
         </footer>
       </div>
+      )}
     </div>
   );
 };
 
 const App = () => {
-  const [hovering, setHovering] = useState(false);
-  const [cursorLabel, setCursorLabel] = useState("");
-  const [cursorStatus, setCursorStatus] = useState("default");
   const [selectedProject, setSelectedProject] = useState(null);
-  const { x, y } = useMousePosition();
 
   const projects = [
     {
@@ -2339,35 +1248,42 @@ const App = () => {
       category: "Strategy Design",
       description: "A comprehensive brand and UX strategy to reposition India's legacy telecom provider for the digital-first era.",
       status: "completed",
-      image: null,
+      theme: "sand",
+      image: bsnlVisual,
       year: "2024",
       role: "Design Strategist",
       tags: ["Brand Strategy", "UX Research", "Service Design"],
     },
     {
-      id: 2,
+      id: 5,
       number: "(02)",
+      title: "Ziptrrip",
+      tabLabel: "ZIPTRRIP",
+      category: "Product / UX Strategy",
+      description: "Redesigning corporate travel into a simpler, faster and more human booking experience.",
+      status: "completed",
+      theme: "blue",
+      image: ziptrripVisual,
+      imageFit: "cover",
+      processNote: "product design → travel experience",
+      year: "2026",
+      role: "Product Design · UX Research · Strategy",
+      tags: ["Product Design", "UX Research", "Travel Experience"],
+    },
+    {
+      id: 2,
+      number: "(03)",
       title: "Raahi",
       tabLabel: "RAAHI",
       category: "UX Design",
       description: "Crafting a seamless digital journey for modern travelers.",
       status: "completed",
-      image: null,
+      theme: "ivory",
+      image: raahiVisual,
+      imageFit: "cover",
       year: "2024",
       role: "Design Research & UI/UX",
       tags: ["Product Design", "User Research", "Prototyping"],
-    },
-    {
-      id: 3,
-      number: "(03)",
-      title: "Voia",
-      tabLabel: "VOIA",
-      category: "Design Thinking",
-      description: "VOIA is a wearable that enables discreet, real-time communication between teachers and deaf-mute students using light and vibration.",
-      status: "completed",
-      image: null,
-      year: "2024",
-      tags: ["Wearable", "Inclusive Design", "Hardware"],
     },
     {
       id: 4,
@@ -2377,34 +1293,39 @@ const App = () => {
       category: "Service Design",
       description: "Designing the infrastructure for future-proof renewable energy services.",
       status: "completed",
-      image: null,
+      theme: "sage",
+      image: solarlinkVisual,
+      imageFit: "cover",
+      imagePosition: "60% 50%",
       year: "2024",
       role: "Service Design · Research · Insight Synthesis · Journey Mapping · Concept & Experience Design",
       tags: ["Service Design", "Systems Thinking", "Sustainability"],
     },
     {
-      id: 5,
+      id: 3,
       number: "(05)",
-      title: "Revela",
-      tabLabel: "REVELA",
-      category: "Tangible Interface",
-      description: "Exploring physical interactions in a digital-first world.",
-      status: "locked",
-      image: null,
-      year: "2025",
-      tags: ["Tangible UI", "Physical Computing"],
+      title: "Voia",
+      tabLabel: "VOIA",
+      category: "Inclusive Design / Wearable",
+      description: "VOIA is a wearable that enables discreet, real-time communication between teachers and deaf-mute students using light and vibration.",
+      status: "completed",
+      theme: "rose",
+      image: voiaVisual,
+      imageFit: "cover",
+      year: "2024",
+      tags: ["Wearable", "Inclusive Design", "Hardware"],
     },
   ];
 
   const openProject = (p) => {
     if (p.status === 'locked') return;
     setSelectedProject(p);
-    setHovering(false);
     window.scrollTo(0, 0);
   };
 
   return (
     <div className="portfolio-shell min-h-screen font-rounded">
+      <PencilCursor />
       {/* 1. Paper Plane + Mini Khushii Entrance Experience */}
       <section id="entrance" className="relative w-full z-50">
         <LoadingExperience />
@@ -2413,15 +1334,14 @@ const App = () => {
       {/* 2. Existing Portfolio Website (Preserved Intact) */}
       <div id="portfolio-content" className="relative">
         <GrainOverlay />
-        <CustomCursor hovering={hovering} label={cursorLabel} status={cursorStatus} />
-        {hovering && <FloatingDoodle x={x} y={y} />}
 
         {selectedProject && (
           <ProjectDetail
+            key={selectedProject.id}
             project={selectedProject}
             onBack={() => setSelectedProject(null)}
-            setHovering={setHovering}
-            setCursorLabel={setCursorLabel}
+            nextProject={projects[projects.findIndex((p) => p.id === selectedProject.id) + 1]}
+            onOpenProject={openProject}
           />
         )}
 
@@ -2429,9 +1349,6 @@ const App = () => {
       <WorkSection
         projects={projects}
         onOpenProject={openProject}
-        setHovering={setHovering}
-        setCursorLabel={setCursorLabel}
-        setCursorStatus={setCursorStatus}
       />
 
       {/* About Section */}
@@ -2473,19 +1390,24 @@ const App = () => {
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-16">
             <a
               href="mailto:khushiimehtadesigns@gmail.com"
-              className="system-button system-button--primary cursor-none"
-              onMouseEnter={() => { setHovering(true); setCursorLabel("EMAIL ME"); }}
-              onMouseLeave={() => setHovering(false)}
+              className="system-button system-button--primary"
             >
               Email
             </a>
             <a
               href="https://www.linkedin.com"
-              className="system-button cursor-none"
-              onMouseEnter={() => { setHovering(true); setCursorLabel("LINKEDIN"); }}
-              onMouseLeave={() => setHovering(false)}
+              className="system-button"
             >
               LinkedIn
+            </a>
+            <a
+              href={`${import.meta.env.BASE_URL}khushii-mehta-resume.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="system-button"
+              aria-label="Resume (PDF, opens in a new tab)"
+            >
+              Resume <ArrowUpRight className="system-button__arrow" size={14} strokeWidth={2.2} aria-hidden="true" />
             </a>
           </div>
           <div className="relative mt-6 w-full">

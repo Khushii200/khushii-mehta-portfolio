@@ -3,30 +3,79 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /**
+ * Poses are described as the direction each limb points, in model space
+ * (+x = her left / viewer's right, +y = up, +z = toward the viewer).
+ * Bones are listed parent-first so each limb is aimed after the one it hangs from.
+ */
+const POSED_BONES = ['LeftUpLeg', 'RightUpLeg', 'LeftFoot', 'RightFoot', 'LeftArm', 'LeftForeArm', 'RightArm', 'RightForeArm', 'Neck'];
+
+// Arms crossed (right forearm in front), ankles crossed.
+const REST_DIRECTIONS = {
+  LeftArm: [0.05, -1, 0.75],
+  LeftForeArm: [-1, 0.02, 0.2],
+  RightArm: [-0.05, -1, 0.85],
+  RightForeArm: [1, -0.02, 0.3],
+  LeftUpLeg: [-0.12, -1, 0.02],
+  RightUpLeg: [0.14, -1, 0.1],
+};
+
+// Right (outer) forearm raised for the wave with the elbow kept low; the left arm stays crossed.
+const WAVE_DIRECTIONS = {
+  RightArm: [-0.35, -1, 0.15],
+  RightForeArm: [-0.25, 1, 0.25],
+};
+
+// Static lean toward the wordmark, pivoting around her feet so they stay planted.
+const LEAN_ANGLE = 0.14;
+
+// Model-space tilts (radians around the viewing axis) applied after aiming:
+// the feet cancel the lean so her soles stay flat, the neck partly counters it.
+const tiltsFor = (lean, neck) => ({ LeftFoot: lean, RightFoot: lean, Neck: neck });
+const NECK_TILT = 0.1;
+
+// Side-to-side swing of the raised forearm (radians around the viewing axis).
+const WAVE_SWING = 0.22;
+
+// Timeline (seconds from when `wave` turns on): settle pause -> raise -> 2 gentle waves -> lower. Plays once.
+const WAVE_TIMING = { delay: 0.55, raise: 0.3, wave: 0.8, cycles: 2, lower: 0.4 };
+
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+const FORWARD_AXIS = new THREE.Vector3(0, 0, 1);
+
+/**
  * MiniKhushii Component
  *
- * Reusable 3D character component rendering the real rigged Mini Khushii GLB model.
- * Preserves all original materials, textures, skinning, and skeleton.
- * Plays the embedded 'Idle' animation clip automatically.
+ * Renders the rigged Mini Khushii GLB with its original materials, textures and skinning.
+ * She leans against the wordmark with crossed arms. The first time `wave` becomes true she waves once.
  */
 export const MiniKhushii = ({
   modelPath,
-  animationName = 'Idle',
   width = 360,
   height = 420,
   scale = 0.53,
   className = '',
-  enableMouseLook = true,
+  wave = false,
+  enableMouseLook = false,
   onLoaded
 }) => {
   const containerRef = useRef(null);
   const onLoadedRef = useRef(onLoaded);
+  const waveRequestedRef = useRef(wave);
+  const waveStartedRef = useRef(false);
+  const startWaveRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     onLoadedRef.current = onLoaded;
   }, [onLoaded]);
+
+  useEffect(() => {
+    waveRequestedRef.current = wave;
+    if (wave) startWaveRef.current?.();
+  }, [wave]);
 
   // Path to the actual GLB file
   const resolvedPath =
@@ -38,13 +87,9 @@ export const MiniKhushii = ({
 
     let isMounted = true;
     let animFrameId = null;
-    let mixer = null;
     let characterModel = null;
-    let waveAction = null;
-    let idleAction = null;
-    let handleAnimationFinished = null;
-    let crossfadeTimer = null;
-    const clock = new THREE.Clock();
+    let waving = false;
+    const clock = new THREE.Clock(false);
 
     // 1. Scene Setup
     const scene = new THREE.Scene();
@@ -87,7 +132,120 @@ export const MiniKhushii = ({
     rimLight.position.set(0, 3, -3);
     scene.add(rimLight);
 
-    // 5. GLTF Model Loading
+    const render = () => renderer.render(scene, camera);
+
+    // 5. Pose helpers
+    const bones = {};
+    const restRotations = {};
+    const childDirections = {};
+    let poses = null;
+
+    const parentWorld = new THREE.Quaternion();
+    const boneWorld = new THREE.Quaternion();
+    const delta = new THREE.Quaternion();
+
+    // Rotate a bone in model space by `rotation`, keeping its parent fixed.
+    const rotateInModelSpace = (bone, rotation) => {
+      bone.getWorldQuaternion(boneWorld);
+      bone.parent.getWorldQuaternion(parentWorld);
+      bone.quaternion.copy(parentWorld.invert().multiply(rotation.multiply(boneWorld)));
+      bone.updateMatrixWorld(true);
+    };
+
+    // Point a bone (towards its child joint) along `direction`.
+    const aimBone = (bone, direction) => {
+      bone.getWorldQuaternion(boneWorld);
+      const current = childDirections[bone.name].clone().applyQuaternion(boneWorld);
+      rotateInModelSpace(bone, delta.setFromUnitVectors(current, new THREE.Vector3(...direction).normalize()));
+    };
+
+    // Resolve a set of limb directions into local bone rotations. Must run before the lean is applied.
+    const buildPose = (directions, tilts) => {
+      POSED_BONES.forEach((name) => bones[name]?.quaternion.copy(restRotations[name]));
+      characterModel.updateMatrixWorld(true);
+
+      POSED_BONES.forEach((name) => {
+        const bone = bones[name];
+        if (!bone) return;
+        if (directions[name]) aimBone(bone, directions[name]);
+        if (tilts[name]) rotateInModelSpace(bone, delta.setFromAxisAngle(FORWARD_AXIS, tilts[name]));
+      });
+
+      return Object.fromEntries(POSED_BONES.filter((name) => bones[name]).map((name) => [name, bones[name].quaternion.clone()]));
+    };
+
+    const buildPoses = (restDirections, waveDirections, tilts) => {
+      const raisedDirections = { ...restDirections, ...waveDirections };
+      const swungForeArm = (angle) =>
+        new THREE.Vector3(...waveDirections.RightForeArm).applyAxisAngle(FORWARD_AXIS, angle).toArray();
+
+      return {
+        rest: buildPose(restDirections, tilts),
+        raised: buildPose(raisedDirections, tilts),
+        swingOut: buildPose({ ...raisedDirections, RightForeArm: swungForeArm(WAVE_SWING) }, tilts),
+        swingIn: buildPose({ ...raisedDirections, RightForeArm: swungForeArm(-WAVE_SWING) }, tilts),
+      };
+    };
+
+    const applyPose = (from, to, t) => {
+      Object.keys(from).forEach((name) => bones[name].quaternion.slerpQuaternions(from[name], to[name], t));
+    };
+
+    // Returns true while the wave is still playing.
+    const updateWave = (time) => {
+      const { delay, raise, wave: waveLength, cycles, lower } = WAVE_TIMING;
+      const t = time - delay;
+
+      const { rest, raised, swingOut, swingIn } = poses;
+
+      if (t < 0) {
+        applyPose(rest, rest, 0);
+      } else if (t < raise) {
+        applyPose(rest, raised, easeOutCubic(t / raise));
+      } else if (t < raise + waveLength) {
+        const phase = (t - raise) / waveLength;
+        // fade the swing in and out so the hand eases into and out of each wave
+        const swing = Math.sin(phase * cycles * Math.PI * 2) * Math.sin(Math.PI * phase);
+        applyPose(raised, swing >= 0 ? swingOut : swingIn, Math.abs(swing));
+      } else if (t < raise + waveLength + lower) {
+        applyPose(raised, rest, easeInOutCubic((t - raise - waveLength) / lower));
+      } else {
+        applyPose(rest, rest, 0);
+        return false;
+      }
+      return true;
+    };
+
+    // 6. Mouse look (optional)
+    let targetRotY = 0;
+    let targetRotX = 0;
+
+    const handleMouseMove = (e) => {
+      const rect = container.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width - 0.5;
+      const ny = (e.clientY - rect.top) / rect.height - 0.5;
+      targetRotY = nx * 0.35;
+      targetRotX = ny * 0.12;
+    };
+
+    if (enableMouseLook) {
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
+
+    // 7. Render loop. Without mouse look she is static after the wave, so the loop stops.
+    const animate = () => {
+      if (waving) waving = updateWave(clock.getElapsedTime());
+
+      if (characterModel && enableMouseLook) {
+        characterModel.rotation.y += (targetRotY - characterModel.rotation.y) * 0.06;
+        characterModel.rotation.x += (targetRotX - characterModel.rotation.x) * 0.06;
+      }
+
+      render();
+      animFrameId = waving || enableMouseLook ? requestAnimationFrame(animate) : null;
+    };
+
+    // 8. GLTF Model Loading
     const loader = new GLTFLoader();
 
     loader.load(
@@ -107,9 +265,15 @@ export const MiniKhushii = ({
               child.material.depthWrite = true;
             }
           }
+          if (child.isBone && POSED_BONES.includes(child.name)) {
+            bones[child.name] = child;
+            restRotations[child.name] = child.quaternion.clone();
+            const joint = child.children.find((c) => c.isBone);
+            if (joint) childDirections[child.name] = joint.position.clone().normalize();
+          }
         });
 
-        // Compute Bounding Box to center the character naturally
+        // Bounding box from the rest pose so the framing matches the original setup
         const box = new THREE.Box3().setFromObject(characterModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
@@ -127,77 +291,27 @@ export const MiniKhushii = ({
         // Face the visitor / camera
         characterModel.rotation.y = 0;
 
-        scene.add(characterModel);
+        // Pivot sits at her feet, so the lean never lifts or slides them
+        const pivot = new THREE.Group();
+        pivot.add(characterModel);
+        scene.add(pivot);
 
-        // 6. Animation Setup: Play Wave once, then crossfade into looping Idle
-        if (gltf.animations && gltf.animations.length > 0) {
-          mixer = new THREE.AnimationMixer(characterModel);
+        poses = buildPoses(REST_DIRECTIONS, WAVE_DIRECTIONS, tiltsFor(LEAN_ANGLE, NECK_TILT));
+        applyPose(poses.rest, poses.rest, 0);
+        pivot.rotation.z = -LEAN_ANGLE;
 
-          const findClipByName = (name) =>
-            gltf.animations.find(
-              (clip) => clip.name.toLowerCase() === name.toLowerCase()
-            );
+        render();
+        if (enableMouseLook) animate();
 
-          const waveClip = findClipByName('Wave');
-          const idleClip = findClipByName(animationName);
-          const CROSSFADE_DURATION = 0.35;
-
-          if (idleClip) {
-            idleAction = mixer.clipAction(idleClip);
-            idleAction.setLoop(THREE.LoopRepeat, Infinity);
-            idleAction.clampWhenFinished = false;
-          } else {
-            console.warn(
-              `[MiniKhushii] Animation clip "${animationName}" was not found. ` +
-              'The character will remain on the final Wave pose.'
-            );
-          }
-
-          const playIdle = (fromAction = null) => {
-            if (!idleAction) return;
-
-            idleAction
-              .reset()
-              .setEffectiveTimeScale(1)
-              .setEffectiveWeight(1)
-              .play();
-
-            if (fromAction) {
-              fromAction.crossFadeTo(idleAction, CROSSFADE_DURATION, false);
-              crossfadeTimer = window.setTimeout(() => {
-                if (!isMounted) return;
-                fromAction.stop();
-                fromAction.enabled = false;
-              }, CROSSFADE_DURATION * 1000);
-            }
-          };
-
-          if (waveClip) {
-            waveAction = mixer.clipAction(waveClip);
-            waveAction
-              .reset()
-              .setEffectiveTimeScale(1)
-              .setEffectiveWeight(1)
-              .setLoop(THREE.LoopOnce, 1);
-            waveAction.clampWhenFinished = true;
-
-            handleAnimationFinished = (event) => {
-              if (event.action !== waveAction) return;
-
-              mixer.removeEventListener('finished', handleAnimationFinished);
-              handleAnimationFinished = null;
-              playIdle(waveAction);
-            };
-
-            mixer.addEventListener('finished', handleAnimationFinished);
-            waveAction.play();
-          } else {
-            console.warn(
-              '[MiniKhushii] Animation clip "Wave" was not found. Falling back to Idle.'
-            );
-            playIdle();
-          }
-        }
+        // The wave runs at most once per page load, whenever `wave` is (or becomes) true
+        startWaveRef.current = () => {
+          if (waveStartedRef.current) return;
+          waveStartedRef.current = true;
+          waving = true;
+          clock.start();
+          if (!animFrameId) animate();
+        };
+        if (waveRequestedRef.current) startWaveRef.current();
 
         setLoading(false);
         if (onLoadedRef.current) onLoadedRef.current(gltf);
@@ -212,54 +326,12 @@ export const MiniKhushii = ({
       }
     );
 
-    // 7. Subtle Mouse Parallax
-    let targetRotY = 0;
-    let targetRotX = 0;
-
-    const handleMouseMove = (e) => {
-      if (!enableMouseLook) return;
-      const rect = container.getBoundingClientRect();
-      const nx = (e.clientX - rect.left) / rect.width - 0.5;
-      const ny = (e.clientY - rect.top) / rect.height - 0.5;
-      targetRotY = nx * 0.35; // gentle turn toward cursor
-      targetRotX = ny * 0.12; // subtle tilt
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-
-    // 8. Animation & Render Loop
-    const animate = () => {
-      animFrameId = requestAnimationFrame(animate);
-
-      const delta = clock.getDelta();
-      if (mixer) {
-        mixer.update(delta);
-      }
-
-      if (characterModel && enableMouseLook) {
-        characterModel.rotation.y += (targetRotY - characterModel.rotation.y) * 0.06;
-        characterModel.rotation.x += (targetRotX - characterModel.rotation.x) * 0.06;
-      }
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
     // 9. Cleanup on Unmount
     return () => {
       isMounted = false;
+      startWaveRef.current = null;
       window.removeEventListener('mousemove', handleMouseMove);
       if (animFrameId) cancelAnimationFrame(animFrameId);
-      if (crossfadeTimer) window.clearTimeout(crossfadeTimer);
-
-      if (mixer) {
-        if (handleAnimationFinished) {
-          mixer.removeEventListener('finished', handleAnimationFinished);
-        }
-        mixer.stopAllAction();
-        if (characterModel) mixer.uncacheRoot(characterModel);
-      }
 
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -278,7 +350,7 @@ export const MiniKhushii = ({
 
       renderer.dispose();
     };
-  }, [resolvedPath, animationName, width, height, scale, enableMouseLook]);
+  }, [resolvedPath, width, height, scale, enableMouseLook]);
 
   return (
     <div
