@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ProjectSheet } from './ProjectSheet';
+import { Scribbled, SectionLabel } from '../ui/Scribble';
 
 // Scroll-driven stack is only used where there is room for it; phones get a plain list.
 const SHOWCASE_QUERY = '(min-width: 768px) and (min-height: 560px)';
@@ -83,7 +84,8 @@ export const WorkSection = ({ projects, onOpenProject }) => {
   return (
     <section id="work" className="portfolio-section work-section" aria-labelledby="work-title">
       <header className="work-intro">
-        <h2 id="work-title">Selected work</h2>
+        <SectionLabel number={1}>Work</SectionLabel>
+        <h2 id="work-title">Selected <Scribbled>work</Scribbled></h2>
         <p>projects that became things.</p>
       </header>
 

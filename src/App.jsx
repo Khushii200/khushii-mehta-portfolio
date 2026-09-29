@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import aboutMainPhoto from './assets/about-khushii-illustration.png';
 import raahiUserFlow from './assets/raahi-user-flow.png';
 import raahiTaskFlow from './assets/raahi-task-flow.png';
 import raahiMoodBoard from './assets/raahi-mood-board.png';
@@ -17,10 +16,14 @@ import raahiVisual from './assets/raahi-visual.webp';
 import voiaVisual from './assets/voia-visual.webp';
 import solarlinkVisual from './assets/solarlink-visual.webp';
 import ziptrripVisual from './assets/ziptrrip-visual.webp';
+import logo from './assets/khushii-logo.png';
+import { Scribbled, SectionLabel } from './components/ui/Scribble';
 import { Mail, Linkedin, Github, Instagram, Sparkles, ArrowUpRight, ArrowRight, ArrowLeft, ExternalLink, Lock, Calendar, User, Target, Search, Users, Zap, BarChart3, Lightbulb, ClipboardList, Smartphone, Globe, Shield, ZapOff, AlertCircle, TrendingDown, MessageSquare, LogOut, Eye, Ear, Heart, Brain } from 'lucide-react';
 import { LoadingExperience } from './components/entrance/LoadingExperience';
+import { IntroLoader } from './components/entrance/IntroLoader';
 import { WorkSection } from './components/work/WorkSection';
 import { PencilCursor } from './components/cursor/PencilCursor';
+import { AboutSection } from './components/about/AboutSection';
 import { BsnlCaseStudy } from './components/case-study/BsnlCaseStudy';
 import { ZiptrripCaseStudy } from './components/case-study/ZiptrripCaseStudy';
 
@@ -1238,6 +1241,8 @@ const ProjectDetail = ({ project, onBack, nextProject, onOpenProject }) => {
 
 const App = () => {
   const [selectedProject, setSelectedProject] = useState(null);
+  // The logo intro plays on every page load.
+  const [introDone, setIntroDone] = useState(false);
 
   const projects = [
     {
@@ -1324,11 +1329,12 @@ const App = () => {
   };
 
   return (
-    <div className="portfolio-shell min-h-screen font-rounded">
+    <div className={`portfolio-shell min-h-screen font-rounded ${introDone ? '' : 'is-intro'}`}>
+      {!introDone && <IntroLoader onDone={() => setIntroDone(true)} />}
       <PencilCursor />
       {/* 1. Paper Plane + Mini Khushii Entrance Experience */}
       <section id="entrance" className="relative w-full z-50">
-        <LoadingExperience />
+        <LoadingExperience ready={introDone} />
       </section>
 
       {/* 2. Existing Portfolio Website (Preserved Intact) */}
@@ -1352,40 +1358,13 @@ const App = () => {
       />
 
       {/* About Section */}
-      <section id="about" className="portfolio-section about-section">
-        <div className="site-container about-me">
-          <div className="about-me__image">
-            <img src={aboutMainPhoto} alt="Illustrated portrait of Khushii Mehta" />
-          </div>
-
-          <div className="about-me__content">
-            <header>
-              <p className="section-eyebrow">About</p>
-              <h2>Get to know me</h2>
-            </header>
-
-            <div className="about-me__intro">
-              <p>I’m Khushii Mehta, a multidisciplinary Experience Design student at FLAME University, majoring in Design with a minor in Marketing.</p>
-              <p>I’m curious about people, behaviour and the systems around us. My practice sits at the intersection of research, strategy, storytelling and creative technology.</p>
-              <p>I like turning observations into ideas that people can actually interact with, whether that means designing experiences, building prototypes, experimenting with Arduino and sensors, or figuring out how a system could work better.</p>
-            </div>
-
-            <dl className="about-me__details">
-              <div><dt>Design</dt><dd>Experience Design · UX · Service Design · Visual Thinking</dd></div>
-              <div><dt>Research</dt><dd>User Research · Behaviour · Strategy · Systems Thinking</dd></div>
-              <div><dt>Making</dt><dd>Prototyping · Arduino · Sensors · Creative Technology</dd></div>
-              <div><dt>Based in</dt><dd>Mumbai / Pune</dd></div>
-              <div><dt>Education</dt><dd>FLAME University · Design + Marketing</dd></div>
-            </dl>
-          </div>
-        </div>
-      </section>
+      <AboutSection />
 
       {/* Contact Section */}
       <section id="contact" className="portfolio-section contact-section">
         <div className="site-container text-center contact-panel">
-          <p className="section-eyebrow">Contact</p>
-          <h2 className="contact-title">Let’s make something thoughtful.</h2>
+          <SectionLabel number={3}>Contact</SectionLabel>
+          <h2 className="contact-title">Let’s make something <Scribbled>thoughtful.</Scribbled></h2>
           <p className="contact-intro">Have a project, opportunity, or idea worth exploring? I’d love to hear about it.</p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-16">
             <a
@@ -1419,11 +1398,14 @@ const App = () => {
       </section>
 
       <footer className="site-footer">
-        <div>©️ 2026 KHUSHII MEHTA • MUMBAI</div>
+        <div className="site-footer__line">
+          <img className="brand-mark brand-mark--footer" src={logo} alt="" width="28" height="28" />
+          ©️ 2026 KHUSHII MEHTA • MUMBAI
+        </div>
       </footer>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        body { font-family: 'Outfit', sans-serif; background-color: #ffffff; color: #202422; }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--color-paper); color: var(--color-text); }
         .font-rounded { font-family: 'Outfit', sans-serif; }
         @keyframes slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .animate-slide-up { animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

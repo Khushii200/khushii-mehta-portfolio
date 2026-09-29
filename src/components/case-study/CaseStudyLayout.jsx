@@ -19,7 +19,7 @@ export const Chapter = ({ id, number, title, children, tone, className = '' }) =
   <section id={id} className={`case-chapter ${tone ? `case-chapter--${tone}` : ''} ${className}`} aria-labelledby={`${id}-title`}>
     <div className="case-grid case-chapter__head">
       <Col col="1 / span 6">
-        <p className="case-meta">{pad(number)} / {title}</p>
+        <p className="case-meta"><span className="case-meta__num">{pad(number)}</span> / {title}</p>
       </Col>
     </div>
     {children}

@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowDown } from 'lucide-react';
 import { MiniKhushii } from './MiniKhushii';
+import logo from '../../assets/khushii-logo.png';
 
 const NAME = 'Khushii';
 // Mini Khushii settles once the name's letters have landed (ms), then waves.
 const CHARACTER_ENTRANCE_DELAY = 1150;
 
-export const LoadingExperience = () => {
+// `ready` is false while the intro loader is on screen; the hero's entrance waits for it.
+export const LoadingExperience = ({ ready = true }) => {
   const [modelLoaded, setModelLoaded] = useState(false);
   const [lettersLanded, setLettersLanded] = useState(false);
   const [reducedMotion] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
-  const characterReady = modelLoaded && (lettersLanded || reducedMotion);
+  const characterReady = ready && modelLoaded && (lettersLanded || reducedMotion);
 
   useEffect(() => {
+    if (!ready) return undefined;
     const timer = window.setTimeout(() => setLettersLanded(true), CHARACTER_ENTRANCE_DELAY);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [ready]);
 
   const scrollToSection = (event, id) => {
     event.preventDefault();
@@ -33,8 +36,7 @@ export const LoadingExperience = () => {
     <div className="studio-shell">
       <header className="studio-nav">
         <a className="studio-nav__brand" href="#entrance" onClick={scrollToTop} aria-label="Home">
-          {/* Logo slot: drop the logo in here, e.g. <img src={logo} alt="" /> or an inline <svg>. */}
-          <div className="brand-logo-placeholder" aria-hidden="true" />
+          <img className="brand-mark brand-mark--nav" src={logo} alt="" width="42" height="42" />
         </a>
 
         <nav className="studio-nav__links" aria-label="Main">
@@ -76,7 +78,7 @@ export const LoadingExperience = () => {
           </div>
 
           <section className="studio-stage__intro" aria-label="Introduction">
-            <p>Experience Designer + Creative Technologist</p>
+            <p>Experience Designer · Design + Marketing</p>
             <span>I design experiences, systems and interactions that make ideas feel more human.</span>
           </section>
 

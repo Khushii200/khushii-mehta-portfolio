@@ -117,7 +117,7 @@ const Chapter = ({ id, number, title, children, tone }) => (
   <section id={id} className={`case-chapter ${tone ? `case-chapter--${tone}` : ''}`} aria-labelledby={`${id}-title`}>
     <div className="case-grid case-chapter__head">
       <Col col="1 / span 3">
-        <p className="case-meta">{pad(number)} / {title}</p>
+        <p className="case-meta"><span className="case-meta__num">{pad(number)}</span> / {title}</p>
       </Col>
     </div>
     {children}
