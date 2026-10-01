@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { CasePlaceholder } from './CasePlaceholder';
-import { ProjectSheet } from '../work/ProjectSheet';
+import { ProjectRow } from '../work/ProjectRow';
 import bsnlFramework from '../../assets/bsnl-ideations.png';
 
 /* ------------------------------------------------------------------
@@ -517,7 +517,9 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
             <h2 className="case-next__title">{nextProject.title} →</h2>
           </Col>
           <Col col="1 / -1" className="case-next__card">
-            <ProjectSheet project={nextProject} index={1} total={5} onOpen={onOpenProject} />
+            <ol className="archive__list archive__list--single">
+              <ProjectRow project={nextProject} index={1} onOpen={onOpenProject} />
+            </ol>
           </Col>
         </div>
       </section>

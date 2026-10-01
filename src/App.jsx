@@ -1252,8 +1252,9 @@ const App = () => {
       tabLabel: "BSNL",
       category: "Strategy Design",
       description: "A comprehensive brand and UX strategy to reposition India's legacy telecom provider for the digital-first era.",
+      disciplines: "Brand Strategy · UX Research · Service Design",
+      summary: "A brand and UX strategy to reposition India’s legacy telecom for the digital-first era.",
       status: "completed",
-      theme: "sand",
       image: bsnlVisual,
       year: "2024",
       role: "Design Strategist",
@@ -1266,11 +1267,9 @@ const App = () => {
       tabLabel: "ZIPTRRIP",
       category: "Product / UX Strategy",
       description: "Redesigning corporate travel into a simpler, faster and more human booking experience.",
+      disciplines: "Product Design · UX Strategy · AI Experience",
       status: "completed",
-      theme: "blue",
       image: ziptrripVisual,
-      imageFit: "cover",
-      processNote: "product design → travel experience",
       year: "2026",
       role: "Product Design · UX Research · Strategy",
       tags: ["Product Design", "UX Research", "Travel Experience"],
@@ -1282,10 +1281,9 @@ const App = () => {
       tabLabel: "RAAHI",
       category: "UX Design",
       description: "Crafting a seamless digital journey for modern travelers.",
+      disciplines: "Service Design · Mobility · User Research",
       status: "completed",
-      theme: "ivory",
       image: raahiVisual,
-      imageFit: "cover",
       year: "2024",
       role: "Design Research & UI/UX",
       tags: ["Product Design", "User Research", "Prototyping"],
@@ -1297,10 +1295,9 @@ const App = () => {
       tabLabel: "SOLARLINK",
       category: "Service Design",
       description: "Designing the infrastructure for future-proof renewable energy services.",
+      disciplines: "Service Design · Systems Thinking",
       status: "completed",
-      theme: "sage",
       image: solarlinkVisual,
-      imageFit: "cover",
       imagePosition: "60% 50%",
       year: "2024",
       role: "Service Design · Research · Insight Synthesis · Journey Mapping · Concept & Experience Design",
@@ -1309,14 +1306,14 @@ const App = () => {
     {
       id: 3,
       number: "(05)",
-      title: "Voia",
+      title: "VOIA",
       tabLabel: "VOIA",
       category: "Inclusive Design / Wearable",
       description: "VOIA is a wearable that enables discreet, real-time communication between teachers and deaf-mute students using light and vibration.",
+      disciplines: "Inclusive Design · Wearable Technology",
+      summary: "A wearable for discreet, real-time classroom communication with deaf-mute students.",
       status: "completed",
-      theme: "rose",
       image: voiaVisual,
-      imageFit: "cover",
       year: "2024",
       tags: ["Wearable", "Inclusive Design", "Hardware"],
     },
@@ -1418,26 +1415,6 @@ const App = () => {
           transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
           transition: transform 0.15s ease;
         }
-        .sticky-note {
-          max-width: 190px;
-          padding: 10px 12px;
-          font-size: 11px;
-          line-height: 1.3;
-          font-weight: 600;
-          color: #1f2937;
-          border-radius: 12px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-          transform: rotate(-2deg);
-        }
-        .sticky-note-purple { background: #e9d5ff; }
-        .sticky-note-lilac { background: #ddd6fe; }
-        .sticky-note-pink { background: #fbcfe8; }
-        .sticky-note-green { background: #bbf7d0; }
-        .sticky-note-sage { background: #d1fae5; }
-        .sticky-note-peach { background: #fecaca; }
-        .sticky-note-rose { background: #fda4af; }
-        .sticky-note-blue { background: #bfdbfe; }
-        .sticky-note-sky { background: #bae6fd; }
         ::-webkit-scrollbar { width: 0px; }
         html { scroll-behavior: smooth; }
       `}} />

@@ -1,110 +1,121 @@
 import React from 'react';
 import illustration from '../../assets/about-khushii-illustration.png';
-import { Scribbled, SectionLabel } from '../ui/Scribble';
 
-const DETAILS = [
-  ['Design', 'Experience Design · UX · Service Design · Visual Thinking'],
-  ['Research', 'User Research · Behaviour · Strategy · Systems Thinking'],
-  ['Making', 'Prototyping · Arduino · Sensors · Creative Technology'],
-  ['Tools', 'Figma · Canva · Framer · React · Arduino · Blender · Filmora · AI Tools'],
-  ['Education', 'FLAME University · Design + Marketing'],
-  ['Based in', 'Mumbai / Pune'],
+const NOTES = [
+  ['studying', 'Experience Design × Marketing, FLAME University'],
+  ['into', 'UX · service design · systems thinking · physical prototyping'],
+  ['making with', 'Figma · Framer · React · Arduino · Blender'],
+  ['based in', 'Mumbai / Pune'],
 ];
 
-/* ---- sticker icons (hand-drawn feel, ink + coral only) ---- */
-const Spark = ({ className = '' }) => (
-  <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M12 2.5c.6 4.6 2.4 7.6 9.2 9.3-6.8 1.4-8.5 4.4-9.2 9.7-.9-5.2-2.9-8.2-9.4-9.6 6.6-1.6 8.7-4.6 9.4-9.4Z" />
-  </svg>
-);
-
-const SKILLS = [
-  ['Creative', 'coral', <Spark key="i" className="sticker__icon" />],
-  ['Curious', 'cream', (
-    <svg key="i" className="sticker__icon sticker__icon--line" viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="10.5" cy="10.5" r="6.2" /><path d="M15.2 15.4 20.5 20.6" />
-    </svg>
-  )],
-  ['User first', 'ink', (
-    <svg key="i" className="sticker__icon sticker__icon--line" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 3.5 18.6 11l-6 1.6-2.6 5.8Z" /><path d="M14.5 15.5 19 20" />
-    </svg>
-  )],
-  ['Systems thinking', 'tint', (
-    <svg key="i" className="sticker__icon sticker__icon--line" viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="5" cy="6" r="2.4" /><circle cx="19" cy="6" r="2.4" /><circle cx="12" cy="18.5" r="2.4" />
-      <path d="M7.3 6.4h9.4M6.4 8.1l4.4 8.4M17.6 8.1l-4.4 8.4" />
-    </svg>
-  )],
+// Pixel dinosaur on a 20×18 grid ("#" = filled)
+const DINO = [
+  '..........########..',
+  '.........##.#######.',
+  '.........##########.',
+  '.........##########.',
+  '.........#####......',
+  '.........########...',
+  '#.......#####.......',
+  '#......#######......',
+  '##...##########.....',
+  '###..#########.#....',
+  '############........',
+  '.##########.........',
+  '..########..........',
+  '...######...........',
+  '....###.##..........',
+  '....##...#..........',
+  '....#....#..........',
+  '....##...##.........',
 ];
 
+/**
+ * About, as a page from a sketchbook: the character on dot-grid paper with a
+ * few black-and-white sticker notes, and a short, quiet introduction.
+ */
 export const AboutSection = () => (
-  <section id="about" className="portfolio-section about-section">
-    <div className="site-container about-me">
-      {/* LEFT — the character, with a few art-directed stickers around her */}
-      <div className="about-stage">
-        <img className="about-stage__character" src={illustration} alt="Illustrated portrait of Khushii Mehta" />
+  <section id="about" className="portfolio-section about-section desk">
+    <div className="site-container desk__inner">
+      {/* LEFT — the sketchbook page */}
+      <div className="desk__page">
+        <span className="desk__tape desk__tape--left" aria-hidden="true" />
+        <span className="desk__tape desk__tape--right" aria-hidden="true" />
 
-        {/* everything below is decorative personality */}
-        <div className="about-stage__stickers" aria-hidden="true">
-          <div className="sticker sticker--poster">
-            <span>Sleep<i>.</i></span>
-            <span>Design<i>.</i></span>
-            <span>Repeat<i>.</i></span>
+        {/* loose ink circle drawn behind the character */}
+        <svg className="desk__circle" viewBox="0 0 200 200" aria-hidden="true">
+          <path d="M100 14c47 1 84 37 84 85 0 49-38 87-86 86-46-1-82-38-82-85 0-45 34-82 80-86 12-1 25 1 35 5" />
+        </svg>
+
+        <img className="desk__character" src={illustration} alt="Illustrated portrait of Khushii Mehta" />
+
+        {/* personal notes stuck around the drawing */}
+        <div className="desk__notes" aria-hidden="true">
+          <div className="note note--poster">
+            <span>Sleep.</span>
+            <span>Design.</span>
+            <span>Repeat.</span>
           </div>
 
-          <ul className="about-stage__skills">
-            {SKILLS.map(([label, tone, icon]) => (
-              <li key={label} className={`sticker sticker--skill sticker--${tone}`}>
-                {icon}
-                {label}
-              </li>
-            ))}
-          </ul>
+          <div className="note note--friendly">
+            <svg viewBox="0 0 196 118">
+              <rect x="10" y="12" width="130" height="86" rx="12" />
+              <path d="M36 30c7-6 16-7 24-2M76 26c8-5 17-5 24 1" />
+              <circle cx="52" cy="50" r="12" />
+              <circle cx="90" cy="47" r="12" />
+              <circle cx="56" cy="52" r="4.5" className="fill" />
+              <circle cx="94" cy="49" r="4.5" className="fill" />
+              <path d="M48 72c12 13 32 14 46 0" />
+              <path d="M118 86 126 50l10 12 34-34 10 10-34 34 12 10Z" className="paper" />
+              <path d="M106 80l-9-4M108 94l-9 4M116 101l1 9" />
+            </svg>
+            <span>User Friendly</span>
+          </div>
 
-          {/* doodles: one coral spark, one hand-drawn arrow */}
-          <Spark className="about-doodle about-doodle--spark" />
-          <svg className="about-doodle about-doodle--arrow" viewBox="0 0 90 60">
+          <span className="note note--tag note--creative">creative</span>
+          <span className="note note--tag note--curious">curious</span>
+          <span className="note note--tag note--ambitious">ambitious</span>
+
+          <svg className="desk__arrow" viewBox="0 0 90 60">
             <path d="M6 10c18 2 42 10 56 30" />
             <path d="M50 40l13 2 2-13" />
           </svg>
 
+          <div className="desk__dino">
+            <span className="desk__dino-speed" />
+            <svg viewBox="0 0 20 18" shapeRendering="crispEdges">
+              {DINO.flatMap((row, y) =>
+                [...row].map((cell, x) => (cell === '#' ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" /> : null))
+              )}
+            </svg>
+          </div>
         </div>
       </div>
 
-      {/* RIGHT — the content */}
-      <div className="about-me__content">
-        <header>
-          <SectionLabel number={2}>About</SectionLabel>
-          <h2>
-            Get to <br />
-            know <Scribbled>me.</Scribbled>
-          </h2>
-        </header>
+      {/* RIGHT — a short introduction */}
+      <div className="desk__intro">
+        <p className="desk__label">02 / About</p>
+        <h2 className="desk__hello">Hi, I’m Khushii.</h2>
 
-        <div className="about-me__intro">
-          <p>
-            I’m Khushii Mehta, a multidisciplinary <mark className="hl">Experience Design</mark> student at FLAME University,
-            majoring in Design with a minor in <mark className="hl">Marketing</mark>.
-          </p>
-          <p>
-            I’m curious about people, behaviour and the systems around us. My practice sits at the intersection of research,
-            strategy, storytelling and creative technology.
-          </p>
-          <p>
-            I like turning observations into ideas that people can actually interact with, whether that means designing
-            experiences, building prototypes, experimenting with Arduino and sensors, or figuring out how a system could work better.
-          </p>
-        </div>
+        <p className="desk__lead">
+          I’m an Experience Design student exploring how research, strategy, technology and storytelling can create
+          meaningful experiences.
+        </p>
+        <p className="desk__body">
+          I’m majoring in Experience Design with a minor in Marketing, and I’m most drawn to UX, service design, systems
+          thinking and physical prototyping — the places where an idea turns into something people can actually use.
+        </p>
 
-        <dl className="about-me__details">
-          {DETAILS.map(([term, value]) => (
+        <dl className="desk__list">
+          {NOTES.map(([term, value]) => (
             <div key={term}>
               <dt>{term}</dt>
               <dd>{value}</dd>
             </div>
           ))}
         </dl>
+
+        <p className="desk__signoff" aria-hidden="true">— khushii</p>
       </div>
     </div>
   </section>
