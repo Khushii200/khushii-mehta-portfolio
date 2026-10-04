@@ -157,7 +157,7 @@ export const ZiptrripCaseStudy = ({ project, nextProject, onOpenProject }) => (
           </dl>
         </Col>
         <Col col="1 / -1" className="case-hero__visual">
-          <CasePlaceholder kind="Hero image" label="Ziptrrip hero visual" ratio="16:9" size="hero" />
+          <CasePlaceholder kind="Hero image" label="Ziptrrip hero visual" ratio="16:9" size="hero" src={project.image} alt="" />
         </Col>
       </div>
     </header>

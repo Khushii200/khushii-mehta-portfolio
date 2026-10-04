@@ -7,9 +7,9 @@ const toAspect = (ratio) => ratio.replace(':', ' / ');
  * that reserves the final aspect ratio; pass `src` later to drop the real image in
  * without any layout shift. Search the code for `data-placeholder` to find them all.
  */
-export const CasePlaceholder = ({ label, ratio = '16:9', note = 'Replace with final project visual', kind = 'Image placeholder', src, alt = '', fit = 'cover', size }) => (
+export const CasePlaceholder = ({ label, ratio = '16:9', note = 'Replace with final project visual', kind = 'Image placeholder', src, alt = '', fit = 'cover', size, className = '' }) => (
   <div
-    className={`case-visual ${size ? `case-visual--${size}` : ''} ${src ? 'case-visual--image' : ''}`}
+    className={`case-visual ${size ? `case-visual--${size}` : ''} ${src ? 'case-visual--image' : ''} ${className}`}
     style={{ aspectRatio: toAspect(ratio) }}
     {...(src ? {} : { 'data-placeholder': label })}
   >

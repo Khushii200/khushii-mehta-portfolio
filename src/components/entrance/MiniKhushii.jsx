@@ -48,7 +48,9 @@ const FORWARD_AXIS = new THREE.Vector3(0, 0, 1);
  * MiniKhushii Component
  *
  * Renders the rigged Mini Khushii GLB with its original materials, textures and skinning.
- * She leans against the wordmark with crossed arms. The first time `wave` becomes true she waves once.
+ * She leans against the wordmark with crossed arms (`lean={false}` stands her upright).
+ * `fit` frames the camera tightly around her so she fills the canvas, feet at the bottom.
+ * The first time `wave` becomes true she waves once.
  */
 export const MiniKhushii = ({
   modelPath,
@@ -57,6 +59,8 @@ export const MiniKhushii = ({
   scale = 0.53,
   className = '',
   wave = false,
+  lean = true,
+  fit = false,
   enableMouseLook = false,
   onLoaded
 }) => {
@@ -224,8 +228,9 @@ export const MiniKhushii = ({
       const rect = container.getBoundingClientRect();
       const nx = (e.clientX - rect.left) / rect.width - 0.5;
       const ny = (e.clientY - rect.top) / rect.height - 0.5;
-      targetRotY = nx * 0.35;
-      targetRotX = ny * 0.12;
+      // clamp so a pointer far across the page only turns her so far
+      targetRotY = Math.max(-1, Math.min(1, nx)) * 0.35;
+      targetRotX = Math.max(-1, Math.min(1, ny)) * 0.08;
     };
 
     if (enableMouseLook) {
@@ -296,9 +301,23 @@ export const MiniKhushii = ({
         pivot.add(characterModel);
         scene.add(pivot);
 
-        poses = buildPoses(REST_DIRECTIONS, WAVE_DIRECTIONS, tiltsFor(LEAN_ANGLE, NECK_TILT));
+        const leanAngle = lean ? LEAN_ANGLE : 0;
+        poses = buildPoses(REST_DIRECTIONS, WAVE_DIRECTIONS, tiltsFor(leanAngle, lean ? NECK_TILT : 0));
         applyPose(poses.rest, poses.rest, 0);
-        pivot.rotation.z = -LEAN_ANGLE;
+        pivot.rotation.z = -leanAngle;
+
+        if (fit) {
+          // Fit the posed figure to the frame with a little headroom, feet near the bottom edge
+          pivot.updateMatrixWorld(true);
+          const posed = new THREE.Box3().setFromObject(pivot);
+          const posedSize = posed.getSize(new THREE.Vector3());
+          const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+          const distance = Math.max(
+            (posedSize.y * 1.06) / 2 / Math.tan(halfFov),
+            (posedSize.x * 1.5) / 2 / (Math.tan(halfFov) * camera.aspect)
+          );
+          camera.position.set(0, posed.min.y + posedSize.y / 2, posed.max.z + distance);
+        }
 
         render();
         if (enableMouseLook) animate();
@@ -350,7 +369,7 @@ export const MiniKhushii = ({
 
       renderer.dispose();
     };
-  }, [resolvedPath, width, height, scale, enableMouseLook]);
+  }, [resolvedPath, width, height, scale, lean, fit, enableMouseLook]);
 
   return (
     <div

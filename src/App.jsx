@@ -17,13 +17,12 @@ import voiaVisual from './assets/voia-visual.webp';
 import solarlinkVisual from './assets/solarlink-visual.webp';
 import ziptrripVisual from './assets/ziptrrip-visual.webp';
 import logo from './assets/khushii-logo.png';
-import { Scribbled, SectionLabel } from './components/ui/Scribble';
 import { Mail, Linkedin, Github, Instagram, Sparkles, ArrowUpRight, ArrowRight, ArrowLeft, ExternalLink, Lock, Calendar, User, Target, Search, Users, Zap, BarChart3, Lightbulb, ClipboardList, Smartphone, Globe, Shield, ZapOff, AlertCircle, TrendingDown, MessageSquare, LogOut, Eye, Ear, Heart, Brain } from 'lucide-react';
 import { LoadingExperience } from './components/entrance/LoadingExperience';
 import { IntroLoader } from './components/entrance/IntroLoader';
 import { WorkSection } from './components/work/WorkSection';
 import { PencilCursor } from './components/cursor/PencilCursor';
-import { AboutSection } from './components/about/AboutSection';
+import { About } from './components/about/About';
 import { BsnlCaseStudy } from './components/case-study/BsnlCaseStudy';
 import { ZiptrripCaseStudy } from './components/case-study/ZiptrripCaseStudy';
 
@@ -75,7 +74,7 @@ const ProjectDetail = ({ project, onBack, nextProject, onOpenProject }) => {
       ) : isZiptrrip ? (
         <ZiptrripCaseStudy project={project} nextProject={nextProject} onOpenProject={onOpenProject} />
       ) : (
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-20">
+      <div className="legacy-case max-w-[1400px] mx-auto px-6 md:px-12 py-20">
         <header className="mb-24">
           <h1 className="text-[12vw] md:text-[8vw] font-black uppercase leading-[0.8] tracking-tighter mb-12">
             {project.title.split(' ').map((word, i) => (
@@ -1355,55 +1354,56 @@ const App = () => {
       />
 
       {/* About Section */}
-      <AboutSection />
+      <About />
 
       {/* Contact Section */}
-      <section id="contact" className="portfolio-section contact-section">
-        <div className="site-container text-center contact-panel">
-          <SectionLabel number={3}>Contact</SectionLabel>
-          <h2 className="contact-title">Let’s make something <Scribbled>thoughtful.</Scribbled></h2>
-          <p className="contact-intro">Have a project, opportunity, or idea worth exploring? I’d love to hear about it.</p>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-16">
-            <a
-              href="mailto:khushiimehtadesigns@gmail.com"
-              className="system-button system-button--primary"
-            >
-              Email
-            </a>
-            <a
-              href="https://www.linkedin.com"
-              className="system-button"
-            >
-              LinkedIn
-            </a>
-            <a
-              href={`${import.meta.env.BASE_URL}khushii-mehta-resume.pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="system-button"
-              aria-label="Resume (PDF, opens in a new tab)"
-            >
-              Resume <ArrowUpRight className="system-button__arrow" size={14} strokeWidth={2.2} aria-hidden="true" />
-            </a>
-          </div>
-          <div className="relative mt-6 w-full">
-            <div className="contact-email">
-              khushiimehtadesigns@gmail.com
-            </div>
-          </div>
+      <section id="contact" className="portfolio-section contact" aria-labelledby="contact-title">
+        <div className="site-container contact__grid">
+          <p className="kicker"><span>03</span> Contact</p>
+          <h2 id="contact-title" className="contact__title">
+            <span>Let’s make</span>
+            <span>something</span>
+            <span className="contact__title-accent">
+              thoughtful.
+              <svg viewBox="0 0 400 30" preserveAspectRatio="none" fill="none" aria-hidden="true">
+                <path d="M4 20 C 90 8, 200 6, 300 14 S 380 24, 396 10" pathLength="1" />
+              </svg>
+            </span>
+          </h2>
+          <p className="contact__intro">Have a project, opportunity, or idea worth exploring? I’d love to hear about it.</p>
+          <ul className="contact__links">
+            <li>
+              <a href="mailto:khushiimehtadesigns@gmail.com"><span className="contact__link-num">a</span>Email<ArrowUpRight size={22} strokeWidth={1.5} aria-hidden="true" /></a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com"><span className="contact__link-num">b</span>LinkedIn<ArrowUpRight size={22} strokeWidth={1.5} aria-hidden="true" /></a>
+            </li>
+            <li>
+              <a
+                href={`${import.meta.env.BASE_URL}khushii-mehta-resume.pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Resume (PDF, opens in a new tab)"
+              >
+                <span className="contact__link-num">c</span>Resume<ArrowUpRight size={22} strokeWidth={1.5} aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
+          <a className="contact__email" href="mailto:khushiimehtadesigns@gmail.com">khushiimehtadesigns@gmail.com</a>
         </div>
       </section>
 
       <footer className="site-footer">
-        <div className="site-footer__line">
+        <span className="site-footer__line">
           <img className="brand-mark brand-mark--footer" src={logo} alt="" width="28" height="28" />
           ©️ 2026 KHUSHII MEHTA • MUMBAI
-        </div>
+        </span>
+        <a className="site-footer__top" href="#entrance" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Back to top ↑</a>
       </footer>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        body { font-family: 'Outfit', sans-serif; background-color: var(--color-paper); color: var(--color-text); }
-        .font-rounded { font-family: 'Outfit', sans-serif; }
+        body { font-family: var(--font-sans); background-color: var(--color-paper); color: var(--color-text); }
+        .font-rounded { font-family: var(--font-sans); }
         @keyframes slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .animate-slide-up { animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
