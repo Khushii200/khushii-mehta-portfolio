@@ -1,784 +1,759 @@
-import React from 'react';
-import { ArrowDown, ArrowRight, BedDouble, Building2, Car, CarTaxiFront, Plane } from 'lucide-react';
-import { CasePlaceholder } from './CasePlaceholder';
-import { Caption, Chapter, Chips, Col, Flow, FromTo, ListColumns, NumberedList, pad } from './CaseStudyLayout';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ArrowRight, ArrowUpRight, Maximize2, X } from 'lucide-react';
 import { ProjectRow } from '../work/ProjectRow';
 
+import protoWelcome from '../../assets/ziptrrip/zt-proto-welcome.jpg';
+import protoFlights from '../../assets/ziptrrip/zt-proto-flights.jpg';
+import protoHotels from '../../assets/ziptrrip/zt-proto-hotels.jpg';
+import protoApproval from '../../assets/ziptrrip/zt-proto-approval.jpg';
+import currentFlightFlow from '../../assets/ziptrrip/zt-current-flight-flow.jpg';
+import currentHotelFlow from '../../assets/ziptrrip/zt-current-hotel-flow.jpg';
+import fieldNotes from '../../assets/ziptrrip/zt-field-notes-navan.jpg';
+import benchmarkCards from '../../assets/ziptrrip/zt-benchmark-navan-cards.jpg';
+import benchmarkPatterns from '../../assets/ziptrrip/zt-benchmark-patterns.jpg';
+import opportunityMatrix from '../../assets/ziptrrip/zt-opportunity-matrix.jpg';
+import sections20 from '../../assets/ziptrrip/zt-20-sections.jpg';
+import model20 from '../../assets/ziptrrip/zt-20-model.jpg';
+import userflow20 from '../../assets/ziptrrip/zt-20-userflow.jpg';
+
 /* ------------------------------------------------------------------
- * Content — condensed from the Ziptrrip master case-study content.
- * No metrics, quotes or outcomes beyond what the source states.
+ * Content — drawn from the internship report, the internship brief, the
+ * customer research repository (6 interviews, 4–10 June 2026), the
+ * competitive benchmark, the ZipTrrip 2.0 strategy and the prototypes.
+ * Interviewees are described by role, not name. Nothing here claims a
+ * design shipped.
  * ------------------------------------------------------------------ */
 
-const META = [
-  ['Role', 'Product / Experience Designer'],
-  ['Duration', '3 months'],
-  ['Company', 'ZipTrrip'],
+const FACTS = [
+  ['Company', 'ZipTrrip — B2B corporate travel platform, India'],
+  ['Role', 'UX Research & Design Intern, Founder’s Office'],
+  ['Duration', '3 months · summer 2026'],
+  ['Worked with', 'The founders, tech and customer-experience teams'],
 ];
 
-const WORKED_ACROSS = ['UX Research', 'Competitive Analysis', 'Stakeholder Research', 'Usability Testing', 'Product Strategy', 'UX Design', 'Conversational Design', 'Prototyping'];
+const METHODS = ['Secondary research', 'Product walkthroughs', 'User-flow mapping', 'Competitive benchmarking', 'Customer interviews', 'Journey mapping', 'Synthesis', 'Prototyping'];
 
-const SIMPLE_JOURNEY = ['I need to travel', 'Search', 'Choose', 'Get approval', 'Book', 'Done'];
-
-const ECOSYSTEM = ['Employee', 'Manager', 'Manager', 'Travel / Admin', 'Finance', 'Confirmation'];
-
-const COMPETING_NEEDS = ['Employee convenience', 'Company policy', 'Cost control', 'Approvals', 'Booking availability', 'Administration', 'Time-sensitive decisions'];
-
-const QUESTIONS = [
-  ['Understand', 'How do people currently travel for work?'],
-  ['Diagnose', 'Where does the existing Ziptrrip experience break down?'],
-  ['Compare', 'How are other corporate travel products solving similar problems?'],
-  ['Improve', 'What could make Ziptrrip faster, clearer and easier to use?'],
+const STAKEHOLDERS = [
+  ['Employee', 'Requests, books and takes the trip'],
+  ['Managers', 'Approve — sometimes two levels deep'],
+  ['Travel admin', 'Books for others, handles exceptions'],
+  ['Finance', 'Invoices, GST, reconciliation'],
+  ['ZipTrrip ops', 'Cancellations, changes, support'],
+  ['Suppliers', 'Airlines, hotels, buses, cabs'],
 ];
 
-const ROLE = [
-  ['Research', ['Secondary research', 'Industry research', 'Competitive benchmarking', 'User interviews', 'Stakeholder interviews', 'Product observation', 'User testing']],
-  ['Synthesis', ['Journey mapping', 'Pain-point identification', 'Opportunity mapping', 'UX problem definition', 'Pattern identification', 'Strategic recommendations']],
-  ['Product + UX', ['User flows', 'Interaction design', 'Chatbot experience', 'Comparison systems', 'Booking experience', 'Approval experience', 'Interface recommendations']],
-  ['Communication', ['Strategy documents', 'Research synthesis', 'Competitive benchmark', 'Product presentations', 'Prototypes', 'Founder / stakeholder presentations', 'Final handover']],
+const OFFICIAL_FLOW = ['Create a trip', 'Add flights and hotel', 'Send for approval', 'Manager approves on WhatsApp or email', 'Booking confirmed'];
+
+const AROUND_IT = [
+  'Requests start in email chains, before anyone opens the platform',
+  'Travellers nudge managers on WhatsApp while fares move',
+  'Admins track bookings in email and Excel',
+  'Cabs are booked on Ola or Uber; some hotels outside the platform',
 ];
 
-const COMPETITORS = ['MakeMyTrip MyBiz', 'ITILITE', 'Navan', 'TravelPerk', 'Concur', 'Yatra for Business', 'Thomas Cook Business Travel', 'SOTC Business Travels', 'Zoho Expense', 'Skyscanner'];
-
-const GENERATIONS = [
-  ['Gen 1', 'Operational travel infrastructure', 'Make business travel manageable.'],
-  ['Gen 2', 'Consumerised enterprise travel', 'Make corporate travel feel like consumer travel.'],
-  ['Gen 3', 'Intelligent operational ecosystems', 'Make the system proactively handle complexity.'],
+const OBJECTIVES = [
+  ['Map', 'Document the current ZipTrrip user flows through primary and secondary research.'],
+  ['Benchmark', 'Compare ZipTrrip’s flows and design against competitors in the category.'],
+  ['Recommend', 'Propose a user flow and design framework grounded in what the research found.'],
 ];
 
-const BENCHMARK = ['Search', 'Flight booking', 'Hotel booking', 'Approvals', 'Policy', 'Expenses', 'Recommendations', 'Support', 'Notifications', 'Administration', 'Automation', 'Personalisation'];
-
-const OPPORTUNITIES = [
-  ['Invisible compliance', 'The system quietly handles policy instead of making users constantly think about it.'],
-  ['Smart recommendations', 'Help users see which option is actually best, rather than processing hundreds of options.'],
-  ['Unified coordination', 'Flights, hotels, cabs, approvals and expenses should feel like parts of the same trip.'],
-  ['Proactive support', 'Anticipate problems instead of waiting for users to report them.'],
-  ['Automated expense handling', 'Reduce manual administrative work.'],
-  ['Adaptive approvals', 'Make approvals faster and less bureaucratic.'],
+const PHASES = [
+  ['Discover', 'May', 'Product walkthrough, industry reports, founder conversations', 'Booking is a small part of corporate travel — approvals, policy, finance and coordination surround it.'],
+  ['Map', 'May', 'Current flows for flights, hotels, buses, trains and cabs, screen by screen', 'Where decisions pile up, and where the journey leaves the platform.'],
+  ['Prototype', 'Late May', 'A conversational assistant, iterated through 14 versions', 'What “one conversation for the whole trip” could feel like.'],
+  ['Benchmark', 'May–June', 'Five competitors booked end to end; 69 observations evaluated', 'Policy and reassurance have moved into the booking flow itself.'],
+  ['Interview', '4–10 June', 'Six customer interviews across travellers, coordinators and admins', 'Users weren’t asking for more inventory. They wanted visibility and reliability.'],
+  ['Synthesise', 'June–July', 'Research repository, journey map, pain-point and bug logs, 2.0 strategy', 'Eight opportunity pillars, prioritised by evidence.'],
+  ['Design', 'July', 'ZipTrrip 2.0 information architecture and end-to-end user flow', 'A trip-first structure, built around approvals, memory and recovery.'],
 ];
 
-const TESTED = ['Flight', 'Hotel', 'Cab', 'Approval', 'Round-trip', 'Multiple attempts', 'Different devices'];
+const COMPETITORS = ['Navan', 'TravelPerk', 'Travel Plus', 'MakeMyTrip MyBiz', 'TripGain'];
 
-const BREAKS = [
-  ['Flight booking', 'No visible seat availability', 'Users could see a flight, but couldn’t easily tell how much availability remained.', 'Flight booking issue'],
-  ['Hotel booking', 'Blank white screen', 'Hotel search could end on a blank white screen — loading, broken or waiting for input? Users couldn’t tell.', 'Hotel blank state'],
-  ['Round-trip booking', 'Select Fare → stall', 'Select Fare could stall, particularly on iOS and desktop — after users had already invested time in search and comparison.', 'Round-trip Select Fare issue'],
+const PATTERNS = [
+  ['Policy moved upstream', 'Every competitor flags in-policy / out-of-policy inline, while choosing — not later, at approval.'],
+  ['Confidence is designed', 'Tags like “Booked with Confidence” exist to lower anxiety at the moment of payment.'],
+  ['Maps decide, not just locate', 'List-and-map sync turns the map into a comparison tool for hotels.'],
+  ['Checkout became a workflow', 'Request forms, approval reasons and add-ons are resolved on the last screen.'],
 ];
 
-const APPROVAL_CHAIN = ['Employee', 'Manager 1', 'Manager 2', 'Admin', 'Final confirmation'];
-
-const REFRAME_LIST = ['Finding the right option', 'Understanding the option', 'Staying within policy', 'Getting approval', 'Coordinating bookings', 'Completing the transaction', 'Handling what happens next'];
-
-const DECISION_JOURNEY = ['Search', 'Compare', 'Decide', 'Approve', 'Book', 'Coordinate', 'Resolve'];
-
-const CHAT_AREAS = ['Flights', 'Hotels', 'Rental cars', 'Buses', 'Trains', 'Airport transfers', 'Customer support'];
-
-const CHAT_FLOW = ['Flight', 'Itinerary', 'Seat', 'Meal', 'Hotel', 'Amenities · location · budget · preferences', 'Approval', 'Confirmation'];
-
-const COMPARISON_TYPES = [
-  ['Flights', Plane],
-  ['Hotels', Building2],
-  ['Rooms', BedDouble],
-  ['Rental cars', Car],
-  ['Airport transfers', CarTaxiFront],
+const SEGMENTS = [
+  ['Frequent travellers', 'Sales, field and tech professionals booking their own trips', ['Book fast and get approved fast', 'Find a hotel near the work location', 'No surprises after booking']],
+  ['Coordinators & admins', 'Book for whole teams — one books 100–200 trips a month', ['Keep travellers happy within policy', 'Avoid escalations', 'Reconcile invoices without chasing']],
+  ['Approvers & finance', 'Managers, department heads, finance — seen through the other two groups', ['Approve without switching context', 'Keep visibility of spend']],
 ];
 
-const PRINCIPLES = [
-  ['Reduce decisions, not just clicks.', 'A user doesn’t necessarily mind one extra click. They mind having to figure out what to do.'],
-  ['Make complexity invisible.', 'Corporate travel is inherently complex. The interface doesn’t need to be.'],
-  ['Show context at the moment of decision.', 'Users shouldn’t have to remember information from three screens ago.'],
-  ['Design for the actual ecosystem.', 'Employees, managers, admins and companies are all part of the experience.'],
-  ['Proactively resolve friction.', 'The best support experience is often the one that prevents the problem.'],
+const FINDINGS = [
+  {
+    key: 'approvals',
+    tab: 'Approvals',
+    count: '5 of 6 interviews',
+    headline: 'The wait isn’t the worst part. Not knowing is.',
+    evidence: [
+      'Chains of up to four people: employee → manager → manager → admin',
+      'Fares rose during 2–3 hour approval windows',
+      'No visibility of where a request was — raised in 4 of 6 interviews',
+    ],
+    quote: ['It goes to the first line manager, then to the second line manager, then to the admin, and then to the fourth position.', 'Field sales executive, frequent traveller'],
+    insight: 'Approval layers often exist for good reasons — one admin argued blanket approvals are needed for policy control. What users couldn’t bear was the black box.',
+    implication: 'Make approval status visible, show cost and policy context to approvers, and keep WhatsApp approvals — the most-loved feature, praised in 4 of 6 interviews.',
+  },
+  {
+    key: 'hotels',
+    tab: 'Hotel trust',
+    count: '4 of 6 interviews',
+    headline: 'Hotels are trusted through colleagues, not listings.',
+    evidence: [
+      'Rooms that didn’t match their photos; a hotel that had closed down by arrival',
+      'In tier-2 and tier-3 cities, few options and hotels 3–5 km from town',
+      'Some hotels booked outside ZipTrrip altogether',
+    ],
+    quote: ['At 12:30 at night I got dropped there… the hotel’s location is around 4–5 kms from the stand, but there is no facility at night to go there.', 'Field sales executive, frequent traveller'],
+    insight: '“Booked before” helped when it was accurate. When the tag appeared on hotels the company had never used, it damaged trust instead.',
+    implication: 'Lead with colleague history and verified signals, and show distance to where the person actually needs to be.',
+  },
+  {
+    key: 'reliability',
+    tab: 'Reliability',
+    count: '3 of 6 · 8 bugs logged',
+    headline: 'A bug blamed on the user costs more than the bug.',
+    evidence: [
+      'Round-trip booking stalled after fare selection, on iOS and desktop',
+      'Hotel search ended on a blank white screen — no results, no error',
+      'Seat 2F was selected and 7F was booked; no seat-availability count in results',
+    ],
+    quote: ['When it is being told that it is a mistake from my end, and I already have the proof that I have selected the seat, then it basically hampers the relations between the companies.', 'Travel & procurement admin'],
+    insight: 'For a B2B product, a broken flow is a relationship problem. Each failure travels up to the company that chose the platform.',
+    implication: 'Fix the core booking flows first. I logged every reported bug with severity and platform and shared it with the engineering team.',
+  },
+  {
+    key: 'coordination',
+    tab: 'Coordination',
+    count: '3 of 6 interviews',
+    headline: 'Travel is collaborative. The platform is built for one.',
+    evidence: [
+      'Trips are coordinated across email, WhatsApp, calls, PDFs and Excel',
+      'No cab booking — travellers switch to Ola, Uber or Rapido mid-journey',
+      'The support helpline wasn’t known to one traveller who needed it at night',
+    ],
+    quote: ['Earlier there was an admin. At least we could communicate. But here, communication was zero for us.', 'Field sales executive, frequent traveller'],
+    insight: 'Most coordination pain sat between people and tools, not on any single screen.',
+    implication: 'Give every trip one shared place — bookings, approvals, support and documents together — and make support impossible to miss.',
+  },
+  {
+    key: 'ai',
+    tab: 'AI & devices',
+    count: 'Split views',
+    headline: 'An assistant, not an agent. A desktop product, with a mobile moment.',
+    evidence: [
+      'AI views split evenly: 2 supportive, 2 indifferent, 2 sceptical',
+      'Rejected: AI booking non-refundable fares or overriding policy on its own',
+      '5 of 6 book on desktop; the travel admin works mostly from an iPhone',
+    ],
+    quote: ['AI can help you automate things but AI can only work up to a certain thing.', 'Travel & procurement admin'],
+    insight: 'Users wanted help deciding, not decisions made for them. And mobile mattered most to coordinators and to people mid-trip, not to booking.',
+    implication: 'Keep the user in control, explain every recommendation, and design mobile for status, support and approvals.',
+  },
 ];
 
-const DEVELOPMENT = [
-  ['User flow exploration', 'User flows', 'Mapping flight, hotel, cab and approval journeys.'],
-  ['Booking flow exploration', 'Booking flow', 'Reducing unnecessary decisions during travel selection.'],
-  ['Chatbot exploration', 'Chatbot', 'Conversation as a unified travel coordination layer.'],
-  ['Comparison card exploration', 'Comparison cards', 'One interaction model across very different travel options.'],
-  ['Approval experience', 'Approvals', 'Making approvals faster and less bureaucratic.'],
+const KEEP = [
+  ['Flight booking', 'Praised across interviews — “my flight experience is 10 on 10.”'],
+  ['Price transparency', 'No sponsored results; corporate fares compared honestly.'],
+  ['WhatsApp approvals', 'Managers approve from wherever they are.'],
 ];
 
-const PROCESS = [
-  ['Discover', 'Understand the industry, users and existing product.'],
-  ['Investigate', 'Run interviews, testing and competitive research.'],
-  ['Synthesise', 'Identify patterns, pain points and systemic problems.'],
-  ['Define', 'Translate findings into opportunity areas.'],
-  ['Explore', 'Develop possible product and interaction directions.'],
-  ['Design', 'Build flows, interfaces and conversational experiences.'],
-  ['Validate', 'Review ideas with stakeholders and test assumptions.'],
-  ['Handover', 'Package the work into usable recommendations and prototypes.'],
+const THEMES = [
+  ['Approval delays', 5],
+  ['Hotel trust', 4],
+  ['Visibility & status', 4],
+  ['Platform reliability', 3],
+  ['Cab & transport gaps', 3],
+  ['Support accessibility', 3],
+  ['Corporate memory', 2],
+  ['Finance & invoices', 1],
+];
+
+const PILLARS = [
+  ['Approval Intelligence', 'Status, ETA and context cards, so approvals stop being a black box.', 'primary'],
+  ['Reliability & Trust', 'Core flows that don’t break, and confirmations that match what was chosen.', 'primary'],
+  ['Corporate Memory', 'Booked before, preferred by the team, closest to the client office.', 'primary'],
+  ['Travel Workspace', 'One place per trip for bookings, approvals, documents and support.', ''],
+  ['Travel Command Center', 'Visibility before, during and after travel.', ''],
+  ['Collaborative Travel', 'Group trips planned together, not message by message.', ''],
+  ['Travel Intelligence', 'Assistance that suggests and alerts — never books on its own.', ''],
+  ['Post-Trip Operations', 'Invoices, GST and reconciliation inside the platform.', ''],
+];
+
+const RESPONSES = [
+  ['No visibility of approvals', 'Approval timeline: created → sent → viewed → decision → confirmed', 'Prototype'],
+  ['Fares rise while approvals wait', 'If the price increases, notify the traveller and admin and re-send for approval', '2.0 user flow'],
+  ['Too many options to compare', 'Three preferences based on travel history, each with the reason it’s shown', '2.0 user flow'],
+  ['Hotel trust and location', 'Hotels on a map with distance from the location that matters', '2.0 user flow'],
+  ['Trips scattered across tools', 'A Workspace for everything about one trip, and a Recovery section for when things change', '2.0 IA'],
+  ['Scepticism about AI', 'AI is an optional path; a quick-booking flow sits beside it', '2.0 user flow'],
 ];
 
 const DELIVERED = [
-  ['Research', ['Industry research', 'Competitor research', 'User research', 'Stakeholder interviews', 'Usability testing', 'Product audits']],
-  ['Strategy', ['Competitive benchmark', 'Industry landscape', 'Opportunity areas', 'UX recommendations', 'Product strategy insights']],
-  ['Design', ['User flows', 'Conversational UX', 'Chatbot interactions', 'Comparison cards', 'Booking explorations', 'UI / UX recommendations', 'Prototypes']],
-  ['Communication', ['Research presentations', 'Strategy documents', 'Founder presentations', 'Product walkthroughs', 'Final handover']],
+  ['Research & synthesis', ['Customer research repository — 6 interviews, 14 pain points, 8 bugs, 11 feature requests', 'End-to-end journey map', 'Competitive benchmark — 5 competitors, 69 observations', 'Stakeholder research plan']],
+  ['Strategy', ['ZipTrrip 2.0 strategic direction — eight pillars', 'Opportunity prioritisation matrix', 'Product principles (“The Invisible Travel Manifesto”)']],
+  ['Design', ['Annotated maps of the current booking flows', 'ZipTrrip 2.0 information architecture', 'ZipTrrip 2.0 end-to-end user flow', 'Conversational assistant prototype, 14 iterations']],
+  ['Handover', ['Reliability and bug log for the engineering team', 'Product walkthroughs and presentations for the founders and customers']],
 ];
-
-const NEXT = [
-  ['Approval intelligence', 'How can the system understand approval requirements before the user reaches a blocker?'],
-  ['Proactive travel assistance', 'How can Ziptrrip identify potential problems before users report them?'],
-  ['Unified trip management', 'How can flights, hotels, cabs, approvals and expenses become one connected trip rather than separate transactions?'],
-];
-
-const AMBIGUITY = ['Explain design decisions', 'Present research', 'Defend findings', 'Turn messy information into actionable insights', 'Understand business constraints', 'Iterate quickly', 'Create structure from ambiguous problems'];
 
 /* ------------------------------------------------------------------ */
 
-export const ZiptrripCaseStudy = ({ project, nextProject, onOpenProject }) => (
-  <article className="case-study case-study--ziptrrip">
-    {/* HERO */}
-    <header className="case-hero">
-      <div className="case-grid">
-        <Col col="1 / span 12">
-          <p className="case-meta">02 / Product design / UX / Strategy · Case study</p>
-          <h1 className="case-title">{project.title}</h1>
-        </Col>
-        <Col col="1 / span 7" md="1 / -1">
-          <p className="case-statement case-statement--hero">Making corporate travel less of a process, and more of a decision.</p>
-          <p className="case-body case-body--lead case-hero__support">
-            Corporate travel involves far more than booking a flight. I explored how Ziptrrip could reduce the decisions,
-            coordination and friction between “I need to travel” and “your trip is confirmed.”
-          </p>
-        </Col>
-        <Col col="9 / span 4" md="1 / -1">
-          <dl className="case-facts">
-            {META.map(([term, value]) => (
-              <div key={term}>
-                <dt className="case-meta">{term}</dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
-            <div className="case-facts__wide">
-              <dt className="case-meta">Worked across</dt>
-              <dd>{WORKED_ACROSS.join(' · ')}</dd>
-            </div>
-          </dl>
-        </Col>
-        <Col col="1 / -1" className="case-hero__visual">
-          <CasePlaceholder kind="Hero image" label="Ziptrrip hero visual" ratio="16:9" size="hero" src={project.image} alt="" />
-        </Col>
-      </div>
-    </header>
+const Section = ({ id, number, label, title, intro, tone, children }) => (
+  <section id={id} className={`zt-section ${tone ? `zt-section--${tone}` : ''}`} aria-labelledby={`${id}-title`}>
+    <div className="zt-wrap">
+      <header className="zt-head">
+        <p className="zt-kicker"><span>{number}</span>{label}</p>
+        <h2 id={`${id}-title`} className="zt-h2">{title}</h2>
+        {intro && <p className="zt-intro">{intro}</p>}
+      </header>
+      {children}
+    </div>
+  </section>
+);
 
-    {/* 01 / THE PROJECT */}
-    <Chapter id="zt-project" number={1} title="The project">
-      <div className="case-grid">
-        <Col col="1 / span 8">
-          <h2 id="zt-project-title" className="case-statement">Corporate travel is supposed to be simple.</h2>
-        </Col>
-        <Col col="1 / -1">
-          <Flow items={SIMPLE_JOURNEY} label="The simple version of a work trip" className="case-flow--light" />
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-body case-body--lead">In practice, it rarely is.</p>
-          <p className="case-body">
-            Multiple approval layers, scattered decisions, unclear information, repetitive forms, booking friction and poor
-            visibility can turn a simple travel request into a long administrative process.
-          </p>
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder label="Corporate travel journey" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
+/** A real project artefact. Click to open it full size. */
+const Figure = ({ src, alt, caption, source, onZoom, className = '', framed = true }) => (
+  <figure className={`zt-figure ${className}`}>
+    <button
+      type="button"
+      className={`zt-figure__frame ${framed ? '' : 'zt-figure__frame--bare'}`}
+      onClick={() => onZoom({ src, alt, caption })}
+      aria-label={`Enlarge image: ${alt}`}
+    >
+      <img src={src} alt={alt} loading="lazy" />
+      <span className="zt-figure__zoom" aria-hidden="true"><Maximize2 size={14} strokeWidth={2} /></span>
+    </button>
+    {(caption || source) && (
+      <figcaption>
+        {source && <span className="zt-figure__source">{source}</span>}
+        {caption}
+      </figcaption>
+    )}
+  </figure>
+);
 
-    {/* 02 / THE CONTEXT */}
-    <Chapter id="zt-context" number={2} title="The context" tone="paper">
-      <div className="case-grid">
-        <Col col="1 / span 10">
-          <h2 id="zt-context-title" className="case-statement">
-            Corporate travel isn’t just a booking experience. <em>It is a coordination experience.</em>
-          </h2>
-        </Col>
-        <Col col="1 / -1">
-          <p className="case-meta case-label">Who is involved</p>
-          <Flow items={ECOSYSTEM} label="People involved in one corporate trip" className="case-flow--nodes" />
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-meta case-label">What they’re balancing</p>
-          <Chips items={COMPETING_NEEDS} label="Competing needs" />
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder kind="Image / diagram placeholder" label="Corporate travel ecosystem" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 03 / THE CHALLENGE */}
-    <Chapter id="zt-challenge" number={3} title="The challenge" tone="ink">
-      <div className="case-grid">
-        <Col col="1 / span 9">
-          <h2 id="zt-challenge-title" className="case-statement">What is actually making corporate travel difficult?</h2>
-        </Col>
-        <Col col="1 / -1">
-          <NumberedList items={QUESTIONS} className="case-points--four" />
-        </Col>
-        <Col col="1 / span 6">
-          <p className="case-body">These four questions became the foundation for the three-month exploration.</p>
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 04 / MY ROLE */}
-    <Chapter id="zt-role" number={4} title="My role">
-      <div className="case-grid">
-        <Col col="1 / span 7">
-          <h2 id="zt-role-title" className="case-h2">Research, synthesis, product and communication.</h2>
-        </Col>
-        <Col col="1 / -1">
-          <ListColumns columns={ROLE} />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 05 / STARTING WITH THE ECOSYSTEM */}
-    <Chapter id="zt-ecosystem" number={5} title="Starting with the ecosystem">
-      <div className="case-grid">
-        <Col col="1 / span 6">
-          <h2 id="zt-ecosystem-title" className="case-h2">Before the screens, the landscape.</h2>
-          <p className="case-body">Before looking at individual screens, I wanted to understand where Ziptrrip sat within the larger corporate travel landscape.</p>
-        </Col>
-        <Col col="1 / -1">
-          <ul className="case-logos" aria-label="Competitors studied">
-            {COMPETITORS.map((name) => <li key={name}>{name}</li>)}
-          </ul>
-        </Col>
-        <Col col="1 / -1">
-          <ol className="case-generations" aria-label="How corporate travel products evolved">
-            {GENERATIONS.map(([gen, name, aim], index) => (
-              <li key={gen}>
-                <p className="case-meta">{gen}</p>
-                <h3 className="case-generations__name">{name}</h3>
-                <p className="case-body">{aim}</p>
-                {index < GENERATIONS.length - 1 && <ArrowRight className="case-generations__arrow" size={22} aria-hidden="true" />}
-              </li>
-            ))}
-          </ol>
-        </Col>
-        <Col col="1 / -1">
-          <CasePlaceholder label="Competitive landscape / industry evolution" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 06 / COMPETITIVE BENCHMARKING */}
-    <Chapter id="zt-benchmark" number={6} title="Competitive benchmarking">
-      <div className="case-grid">
-        <Col col="1 / span 9">
-          <h2 id="zt-benchmark-title" className="case-statement">
-            The question wasn’t “what features do they have?” It was: <em>“why do those features matter?”</em>
-          </h2>
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-meta case-label">Benchmarked across</p>
-          <Chips items={BENCHMARK} label="Benchmark categories" className="case-chips--grid" />
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder label="Competitor benchmark" ratio="16:9" />
-        </Col>
-        <Col col="1 / span 10">
-          <div className="case-callout">
-            <p className="case-callout__lead">Adding more features doesn’t necessarily make Ziptrrip better.</p>
-            <p className="case-callout__text">The opportunity was to reduce the amount of work the user has to do.</p>
+const Lightbox = ({ image, onClose }) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (image && !dialog.open) dialog.showModal();
+    if (!image && dialog.open) dialog.close();
+  }, [image]);
+  return (
+    <dialog
+      ref={ref}
+      className="zt-lightbox"
+      aria-label={image?.alt || 'Image'}
+      onClose={onClose}
+      onClick={(event) => { if (event.target === ref.current) onClose(); }}
+    >
+      {image && (
+        <>
+          <button type="button" className="zt-lightbox__close" onClick={onClose} aria-label="Close image">
+            <X size={20} />
+          </button>
+          <div className="zt-lightbox__scroll">
+            <img src={image.src} alt={image.alt} />
           </div>
-        </Col>
-      </div>
-    </Chapter>
+          {image.caption && <p className="zt-lightbox__caption">{image.caption}</p>}
+        </>
+      )}
+    </dialog>
+  );
+};
 
-    {/* 07 / THE CORE OPPORTUNITY */}
-    <Chapter id="zt-opportunity" number={7} title="The core opportunity" tone="paper">
-      <div className="case-grid">
-        <Col col="1 / span 6">
-          <h2 id="zt-opportunity-title" className="case-h2">Six places to take work away from the user.</h2>
-        </Col>
-        <Col col="1 / -1">
-          <ol className="case-cards case-cards--three">
-            {OPPORTUNITIES.map(([title, body], index) => (
-              <li key={title}>
-                <span className="case-points__num">{pad(index + 1)}</span>
-                <h3 className="case-sub">{title}</h3>
-                <p className="case-body case-body--small">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </Col>
-        <Col col="1 / -1">
-          <CasePlaceholder label="Opportunity map" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 08 / LOOKING AT THE ACTUAL PRODUCT */}
-    <Chapter id="zt-product" number={8} title="Looking at the actual product">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-product-title" className="visually-hidden">Looking at the actual product</h2>
-          <FromTo from="What do competitors do?" to="What actually happens when someone uses Ziptrrip?" size="large" />
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-body case-body--lead">I ran product walkthroughs and usability testing across the whole journey.</p>
-          <Chips items={TESTED} label="What was tested" />
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder label="Existing Ziptrrip user journey" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 09 / THE REALITY OF THE BOOKING JOURNEY */}
-    <Chapter id="zt-reality" number={9} title="The reality of the booking journey" tone="ink" className="case-chapter--metrics">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-reality-title" className="visually-hidden">The reality of the booking journey</h2>
-          <div className="case-metrics">
-            <p className="case-metric"><strong>36</strong><span>minutes</span></p>
-            <p className="case-metric"><strong><small>~</small>69</strong><span>clicks</span></p>
-          </div>
-        </Col>
-        <Col col="1 / span 6">
-          <p className="case-body case-body--lead">A complete Ziptrrip booking session could involve 36 minutes and approximately 69 clicks.</p>
-        </Col>
-        <Col col="7 / span 6">
-          <p className="case-body">
-            The pattern wasn’t simply “too many clicks.” <strong>The system was making users perform too many decisions and actions themselves.</strong>
-          </p>
-        </Col>
-        <Col col="1 / -1">
-          <CasePlaceholder label="User testing journey / click + time breakdown" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 10 / WHERE THINGS BROKE */}
-    <Chapter id="zt-breaks" number={10} title="Where things broke">
-      <div className="case-grid">
-        <Col col="1 / span 7">
-          <h2 id="zt-breaks-title" className="case-h2">Three moments where the journey stopped.</h2>
-        </Col>
-        <Col col="1 / -1">
-          <ol className="case-issues">
-            {BREAKS.map(([area, issue, body, visual], index) => (
-              <li key={area}>
-                <CasePlaceholder label={visual} ratio="4:3" note="Replace with real screenshot / recording" />
-                <p className="case-meta">{pad(index + 1)} / {area}</p>
-                <h3 className="case-issues__issue">{issue}</h3>
-                <p className="case-body case-body--small">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 11 / THE IOS INSIGHT */}
-    <Chapter id="zt-ios" number={11} title="The iOS insight" tone="paper">
-      <div className="case-grid">
-        <Col col="1 / span 8">
-          <h2 id="zt-ios-title" className="case-statement case-statement--xl">Ziptrrip = the iPhone app.</h2>
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-body case-body--lead">One stakeholder interview fundamentally changed how I thought about the product.</p>
-          <p className="case-body">
-            Vivek Singh, a Central Booking Coordinator and frequent Ziptrrip user, didn’t think of it as the web platform the
-            team did. His primary device was iOS, with laptop / desktop second.
-          </p>
-          <FromTo fromLabel="Assumed" from="A web platform" toLabel="Actually" to="iOS first, desktop second" size="compact" />
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder label="iOS experience / user context" ratio="16:9" />
-        </Col>
-        <Col col="1 / span 10">
-          <p className="case-principle">
-            Don’t design for the platform you think users use. <em>Design for the platform they actually use.</em>
-          </p>
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 12 / THE APPROVAL BOTTLENECK */}
-    <Chapter id="zt-approval" number={12} title="The approval bottleneck">
-      <div className="case-grid">
-        <Col col="1 / span 8">
-          <h2 id="zt-approval-title" className="case-h2">Each additional layer introduces waiting.</h2>
-          <p className="case-body">And waiting is particularly painful in travel, because travel decisions are time-sensitive.</p>
-        </Col>
-        <Col col="1 / -1">
-          <ol className="case-approval" aria-label="Approval chain, with waiting added at every hand-off">
-            {APPROVAL_CHAIN.map((step, index) => (
-              <li key={step}>
-                <span className="case-approval__step">{step}</span>
-                {index > 0 && (
-                  <span className="case-approval__wait" aria-label={`${index} wait${index > 1 ? 's' : ''} so far`}>
-                    {Array.from({ length: index }, (_, i) => <i key={i} />)}
-                    <em>{index === 1 ? 'wait' : `${index}× waiting`}</em>
-                  </span>
-                )}
-              </li>
-            ))}
-          </ol>
-        </Col>
-        <Col col="1 / -1">
-          <CasePlaceholder label="Approval flow" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 13 / THE BIGGER PROBLEM */}
-    <Chapter id="zt-bigger" number={13} title="The bigger problem" tone="paper">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-bigger-title" className="visually-hidden">The bigger problem</h2>
-          <ol className="case-reframe">
-            <li>
-              <p className="case-meta">Initial framing</p>
-              <p className="case-reframe__text"><s>Make booking easier.</s></p>
-            </li>
-            <li>
-              <p className="case-meta">Research</p>
-              <p className="case-reframe__body">Users weren’t simply struggling with booking. They were navigating decisions, policies, approvals, coordination and uncertainty.</p>
-            </li>
-            <li className="case-reframe__new">
-              <p className="case-meta">New framing</p>
-              <p className="case-reframe__text">Make corporate travel decisions faster.</p>
-            </li>
-          </ol>
-        </Col>
-        <Col col="1 / -1">
-          <p className="case-meta case-label">What “faster” has to cover</p>
-          <ol className="case-steps-inline">
-            {REFRAME_LIST.map((item, index) => (
-              <li key={item}><span className="case-points__num">{pad(index + 1)}</span>{item}</li>
-            ))}
-          </ol>
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 14 / THE STRATEGIC SHIFT — hero moment */}
-    <Chapter id="zt-shift" number={14} title="The strategic shift" tone="ink" className="case-chapter--hero-moment">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-shift-title" className="case-shift-title">
-            <span>Booking platform</span>
-            <ArrowDown className="case-shift-title__arrow" aria-hidden="true" />
-            <span>Decision platform</span>
-          </h2>
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-meta">Instead of asking</p>
-          <p className="case-question case-question--muted">“How do we help users book travel?”</p>
-        </Col>
-        <Col col="7 / span 6">
-          <p className="case-meta">I started asking</p>
-          <p className="case-question">“How do we help users make and complete travel decisions with the least possible effort?”</p>
-        </Col>
-        <Col col="1 / -1">
-          <Flow items={DECISION_JOURNEY} label="The complete decision journey" className="case-flow--journey" />
-        </Col>
-        <Col col="1 / -1">
-          <CasePlaceholder label="Strategic shift / decision platform visual" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 15 / CONVERSATIONAL TRAVEL */}
-    <Chapter id="zt-chat" number={15} title="Conversational travel">
-      <div className="case-grid">
-        <Col col="1 / span 9">
-          <h2 id="zt-chat-title" className="case-statement">
-            Tell me where you’re going. <em>I’ll help you figure out the rest.</em>
-          </h2>
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-body case-body--lead">The goal wasn’t to place a chatbot over the existing interface.</p>
-          <p className="case-body">The exploration asked whether conversation could become a unified travel coordination layer.</p>
-          <p className="case-meta case-label">One conversation across</p>
-          <Chips items={CHAT_AREAS} label="Supported areas" />
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder label="Conversational travel concept" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 16 / DESIGNING THE CONVERSATIONAL EXPERIENCE */}
-    <Chapter id="zt-chatflow" number={16} title="Designing the conversational experience">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-chatflow-title" className="visually-hidden">Designing the conversational experience</h2>
-          <p className="case-meta case-label">One trip, one conversation</p>
-          <Flow items={CHAT_FLOW} label="Conversation flow" className="case-flow--light" />
-        </Col>
-        <Col col="1 / -1">
-          <p className="case-shift-inline">
-            <span>AI search</span>
-            <ArrowRight aria-hidden="true" />
-            <span>AI travel coordination</span>
-          </p>
-        </Col>
-        <Col col="1 / span 6" md="1 / span 6">
-          <CasePlaceholder label="Chatbot flow" ratio="16:9" />
-        </Col>
-        <Col col="7 / span 6" md="7 / span 6">
-          <CasePlaceholder label="Chatbot UI / interaction" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 17 / THE COMPARISON CARD SYSTEM */}
-    <Chapter id="zt-cards" number={17} title="The comparison card system" tone="paper">
-      <div className="case-grid">
-        <Col col="1 / span 5">
-          <h2 id="zt-cards-title" className="case-h2">One system, many travel decisions.</h2>
-          <p className="case-body">
-            Flights, hotels, rooms, rental cars and airport transfers carry completely different information — yet users
-            still need to compare options.
-          </p>
-        </Col>
-        <Col col="7 / span 6" className="case-col--end">
-          <p className="case-principle case-principle--tight">Same interaction model. <em>Different content.</em></p>
-        </Col>
-        <Col col="1 / -1">
-          <ul className="case-compare" aria-label="The same comparison card adapting to each travel type">
-            {COMPARISON_TYPES.map(([name, Icon]) => (
-              <li key={name}>
-                <span className="case-compare__head"><Icon size={16} aria-hidden="true" />{name}</span>
-                <span className="case-compare__line" />
-                <span className="case-compare__line case-compare__line--short" />
-                <span className="case-compare__line" />
-                <span className="case-compare__action" />
-              </li>
-            ))}
-          </ul>
-        </Col>
-        <Col col="1 / -1">
-          <CasePlaceholder label="Comparison card system" ratio="16:9" />
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 18 / DESIGN PRINCIPLES */}
-    <Chapter id="zt-principles" number={18} title="Design principles">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-principles-title" className="visually-hidden">Design principles</h2>
-          <ol className="case-principles">
-            {PRINCIPLES.map(([title, body], index) => (
-              <li key={title}>
-                <span className="case-points__num">{pad(index + 1)}</span>
-                <h3 className="case-principles__title">{title}</h3>
-                <p className="case-body case-body--small">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 19 / DESIGN DEVELOPMENT */}
-    <Chapter id="zt-development" number={19} title="Design development">
-      <div className="case-grid">
-        <Col col="1 / span 6">
-          <h2 id="zt-development-title" className="case-h2">From findings to flows.</h2>
-        </Col>
-        {DEVELOPMENT.slice(0, 4).map(([label, title, caption], index) => (
-          <Col key={label} col={index % 2 === 0 ? '1 / span 6' : '7 / span 6'} md={index % 2 === 0 ? '1 / span 6' : '7 / span 6'}>
-            <CasePlaceholder label={label} ratio="4:3" />
-            <Caption index={index + 1} title={title}>{caption}</Caption>
-          </Col>
+/** Evidence → insight → implication, one finding at a time. */
+const Findings = () => {
+  const [active, setActive] = useState(0);
+  const tabs = useRef([]);
+  const onKey = (event) => {
+    const step = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 0;
+    if (!step) return;
+    event.preventDefault();
+    const next = (active + step + FINDINGS.length) % FINDINGS.length;
+    setActive(next);
+    tabs.current[next]?.focus();
+  };
+  const f = FINDINGS[active];
+  return (
+    <div className="zt-findings">
+      <div className="zt-findings__tabs" role="tablist" aria-label="Findings" aria-orientation="vertical" onKeyDown={onKey}>
+        {FINDINGS.map((item, index) => (
+          <button
+            key={item.key}
+            ref={(el) => { tabs.current[index] = el; }}
+            type="button"
+            role="tab"
+            id={`zt-tab-${item.key}`}
+            aria-selected={index === active}
+            aria-controls={`zt-panel-${item.key}`}
+            tabIndex={index === active ? 0 : -1}
+            className="zt-findings__tab"
+            onClick={() => setActive(index)}
+          >
+            <span className="zt-findings__num">{String(index + 1).padStart(2, '0')}</span>
+            <span className="zt-findings__label">{item.tab}</span>
+            <span className="zt-findings__count">{item.count}</span>
+          </button>
         ))}
-        <Col col="1 / span 5">
-          <CasePlaceholder label={DEVELOPMENT[4][0]} ratio="4:3" />
-          <Caption index={5} title={DEVELOPMENT[4][1]}>{DEVELOPMENT[4][2]}</Caption>
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder label="UI / interaction exploration" ratio="16:9" />
-          <Caption index={6} title="UI / interaction">Interface recommendations across the booking journey.</Caption>
-        </Col>
       </div>
-    </Chapter>
 
-    {/* 20 / PROCESS */}
-    <Chapter id="zt-process" number={20} title="Process">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-process-title" className="visually-hidden">Process</h2>
-          <ol className="case-process">
-            {PROCESS.map(([step, body], index) => (
-              <li key={step}>
-                <span className="case-points__num">{pad(index + 1)}</span>
-                <h3 className="case-process__step">{step}</h3>
-                <p className="case-body case-body--small">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </Col>
+      <div className="zt-findings__panel" role="tabpanel" id={`zt-panel-${f.key}`} aria-labelledby={`zt-tab-${f.key}`} tabIndex={0}>
+        <h3 className="zt-findings__headline">{f.headline}</h3>
+        <ol className="zt-chain">
+          <li>
+            <p className="zt-chain__step">Evidence</p>
+            <ul>{f.evidence.map((line) => <li key={line}>{line}</li>)}</ul>
+          </li>
+          <li>
+            <p className="zt-chain__step">Insight</p>
+            <p>{f.insight}</p>
+          </li>
+          <li>
+            <p className="zt-chain__step">Design implication</p>
+            <p>{f.implication}</p>
+          </li>
+        </ol>
+        <blockquote className="zt-quote">
+          <p>“{f.quote[0]}”</p>
+          <footer>— {f.quote[1]}</footer>
+        </blockquote>
       </div>
-    </Chapter>
+    </div>
+  );
+};
 
-    {/* 21 / WHAT I DELIVERED */}
-    <Chapter id="zt-delivered" number={21} title="What I delivered" tone="paper">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-delivered-title" className="visually-hidden">What I delivered</h2>
-          <ListColumns columns={DELIVERED} />
-        </Col>
-      </div>
-    </Chapter>
+/* ------------------------------------------------------------------ */
 
-    {/* 22 / THE IMPACT */}
-    <Chapter id="zt-impact" number={22} title="The impact">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-impact-title" className="visually-hidden">The impact</h2>
-          <FromTo from="A platform that helps employees book corporate travel." to="A system that helps organisations coordinate travel with less effort." size="large" />
-        </Col>
-        <Col col="1 / -1">
-          <Flow items={DECISION_JOURNEY} label="The whole journey, not one moment" className="case-flow--journey case-flow--quiet" />
-        </Col>
-        <Col col="1 / span 5">
-          <p className="case-body case-body--lead">The biggest outcome wasn’t a single new screen. It was a shift in how the product could be understood.</p>
-          <p className="case-body">Instead of optimising one moment, the product could begin optimising the entire travel journey.</p>
-          <p className="case-note">No post-redesign business metrics are claimed here — the outcome was a strategic one.</p>
-        </Col>
-        <Col col="6 / span 7">
-          <CasePlaceholder kind="Large image placeholder" label="Final Ziptrrip product / strategy visual" ratio="16:9" size="large" />
-        </Col>
-      </div>
-    </Chapter>
+export const ZiptrripCaseStudy = ({ project, nextProject, onOpenProject }) => {
+  const [zoomed, setZoomed] = useState(null);
+  const zoom = useCallback((image) => setZoomed(image), []);
 
-    {/* 23 / WHAT I WOULD EXPLORE NEXT */}
-    <Chapter id="zt-next-explore" number={23} title="What I would explore next">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-next-explore-title" className="visually-hidden">What I would explore next</h2>
-          <ol className="case-cards case-cards--three">
-            {NEXT.map(([title, body], index) => (
-              <li key={title}>
-                <span className="case-points__num">{pad(index + 1)}</span>
-                <h3 className="case-sub">{title}</h3>
-                <p className="case-body case-body--small">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </Col>
-      </div>
-    </Chapter>
+  return (
+    <article className="case-study case-study--zt zt">
+      {/* HERO */}
+      <header className="zt-hero">
+        <div className="zt-wrap">
+          <p className="zt-kicker"><span>02</span>Experience design internship · Case study</p>
+          <h1 className="zt-title">Beyond booking.</h1>
+          <p className="zt-subtitle">Rethinking the corporate travel experience at ZipTrrip</p>
+          <div className="zt-hero__grid">
+            <p className="zt-lede">
+              Three months inside a B2B travel startup, researching why a simple work trip turns into a chain of approvals,
+              follow-ups and workarounds — and what the next version of the product should do about it.
+            </p>
+            <dl className="zt-facts">
+              {FACTS.map(([term, value]) => (
+                <div key={term}>
+                  <dt>{term}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <ul className="zt-tags" aria-label="Methods">
+            {METHODS.map((method) => <li key={method}>{method}</li>)}
+          </ul>
+          <Figure
+            className="zt-hero__figure"
+            src={protoWelcome}
+            alt="The ZipTrrip conversational assistant prototype, opening on the question “Where are you headed?” with suggested requests such as Mumbai to Bangalore tomorrow morning"
+            source="Prototype"
+            caption="The conversational travel assistant I prototyped — one of the design directions explored later in this case study."
+            onZoom={zoom}
+          />
+        </div>
+      </header>
 
-    {/* 24 / WHAT I LEARNED */}
-    <Chapter id="zt-learned" number={24} title="What I learned" tone="paper">
-      <div className="case-grid">
-        <Col col="1 / -1">
-          <h2 id="zt-learned-title" className="visually-hidden">What I learned about enterprise UX</h2>
-          <div className="case-compare-chains">
+      {/* 01 / CONTEXT */}
+      <Section
+        id="zt-context"
+        number="01"
+        label="The context"
+        title="A trip is more than a ticket."
+        intro="ZipTrrip brings bookings, approvals, travel policies and travel services into one platform for companies. But every trip it handles involves far more people than the one making the booking."
+      >
+        <div className="zt-split">
+          <div className="zt-system" role="img" aria-label="Diagram: one work trip connects the employee, managers, travel admin, finance, ZipTrrip operations and suppliers">
+            <p className="zt-system__core">One work trip</p>
+            <ul className="zt-system__nodes">
+              {STAKEHOLDERS.map(([who, what]) => (
+                <li key={who}><strong>{who}</strong><span>{what}</span></li>
+              ))}
+            </ul>
+            <p className="zt-note">Synthesis diagram · drawn from interviews and secondary research</p>
+          </div>
+          <div className="zt-stack">
             <div>
-              <p className="case-meta">Before</p>
-              <Flow items={['User', 'Interface', 'Task']} className="case-flow--compact" />
+              <p className="zt-label">The intended journey</p>
+              <ol className="zt-flow">
+                {OFFICIAL_FLOW.map((step, index) => (
+                  <li key={step}>
+                    <span>{step}</span>
+                    {index < OFFICIAL_FLOW.length - 1 && <ArrowRight size={14} aria-hidden="true" />}
+                  </li>
+                ))}
+              </ol>
             </div>
             <div>
-              <p className="case-meta">After</p>
-              <Flow items={['User', 'Interface', 'Organisation', 'Policy', 'People', 'Approval', 'System', 'Task']} className="case-flow--compact case-flow--emphasis" />
+              <p className="zt-label">What happens around it</p>
+              <ul className="zt-list">
+                {AROUND_IT.map((item) => <li key={item}>{item}</li>)}
+              </ul>
             </div>
           </div>
-        </Col>
-        <Col col="1 / span 8">
-          <p className="case-principle case-principle--tight">
-            The interface is only one part of the experience. <em>A beautifully designed screen cannot fix a fundamentally inefficient system.</em>
-          </p>
-        </Col>
-      </div>
-    </Chapter>
+        </div>
+      </Section>
 
-    {/* 25 / DESIGNING WITH AMBIGUITY */}
-    <Chapter id="zt-ambiguity" number={25} title="Designing with ambiguity">
-      <div className="case-grid">
-        <Col col="1 / span 5">
-          <h2 id="zt-ambiguity-title" className="case-h2">Not only designing screens.</h2>
-          <p className="case-body">As the primary design person on the team, I worked closely with the founders and stakeholders. That meant I also had to:</p>
-        </Col>
-        <Col col="7 / span 6">
-          <Chips items={AMBIGUITY} label="What the role involved" className="case-chips--stack" />
-        </Col>
-        <Col col="1 / -1">
-          <p className="case-loop" aria-label="Research, strategy, design and business informing each other">
-            {['Research', 'Strategy', 'Design', 'Business'].map((item, index) => (
-              <React.Fragment key={item}>
-                {index > 0 && <span aria-hidden="true">↔</span>}
-                <strong>{item}</strong>
-              </React.Fragment>
+      {/* 02 / BRIEF + APPROACH */}
+      <Section
+        id="zt-brief"
+        number="02"
+        label="The brief"
+        title="Map it, benchmark it, reimagine it."
+        intro="I joined the founder’s office as a UX research and design intern. The work went well beyond screens — research, product strategy, stakeholder interviews and the communication around them."
+        tone="soft"
+      >
+        <ol className="zt-objectives">
+          {OBJECTIVES.map(([name, body], index) => (
+            <li key={name}>
+              <span className="zt-num">{String(index + 1).padStart(2, '0')}</span>
+              <h3>{name}</h3>
+              <p>{body}</p>
+            </li>
+          ))}
+        </ol>
+
+        <p className="zt-label zt-label--spaced">How the work unfolded — and what each step uncovered</p>
+        <ol className="zt-phases">
+          {PHASES.map(([name, when, did, found]) => (
+            <li key={name}>
+              <p className="zt-phases__when">{when}</p>
+              <h3>{name}</h3>
+              <p className="zt-phases__did">{did}</p>
+              <p className="zt-phases__found">{found}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
+      {/* 03 / THE EXISTING PRODUCT */}
+      <Section
+        id="zt-product"
+        number="03"
+        label="The existing product"
+        title="Following one booking, screen by screen."
+        intro="I mapped how an employee books flights, hotels, buses, trains and cabs on ZipTrrip today, annotating every decision the interface asks them to make."
+      >
+        <Figure
+          src={currentFlightFlow}
+          alt="Annotated user flow of booking a flight on ZipTrrip: searching, filtering many results, then comparing the ZipTrrip corporate fare with the regular fare, cancellation charges and date-change charges"
+          source="User-flow map · flights"
+          caption="Search, filter, then choose between corporate and regular fares — with cancellation and date-change charges to weigh up before a single seat is picked."
+          onZoom={zoom}
+        />
+        <Figure
+          src={currentHotelFlow}
+          alt="Annotated user flow of booking a hotel on ZipTrrip: filters, tags showing that colleagues have booked a hotel before, and a red branch for when the hotel is not on the platform"
+          source="User-flow map · hotels"
+          caption="“Colleague booked” tags already hint at corporate memory. And when a hotel isn’t listed, the request leaves the product entirely."
+          onZoom={zoom}
+        />
+      </Section>
+
+      {/* 04 / THE MARKET */}
+      <Section
+        id="zt-market"
+        number="04"
+        label="The market"
+        title="Five competitors, booked end to end."
+        intro={`I walked through ${COMPETITORS.join(', ')} across flights, hotels, trains, buses and cars — logging 69 observations and asking of each: what does it do, why would a business traveller value it, and is it a gap for ZipTrrip?`}
+        tone="soft"
+      >
+        <div className="zt-pair">
+          <Figure
+            src={fieldNotes}
+            alt="Handwritten field notes on Navan: AI chatbot, showing policy, loyalty programme, flags out-of-policy options while booking, carbon emissions, seat dimensions, Booked with Confidence tags and more"
+            source="Field notes"
+            caption="Raw notes, taken while booking."
+            onZoom={zoom}
+          />
+          <Figure
+            src={benchmarkCards}
+            alt="The same Navan features turned into evaluated cards, each with a description, why users value it, the opportunity for ZipTrrip and a priority"
+            source="Benchmark · feature cards"
+            caption="The same notes, evaluated one by one."
+            onZoom={zoom}
+          />
+        </div>
+
+        <p className="zt-label zt-label--spaced">Patterns that held across all five</p>
+        <ol className="zt-patterns">
+          {PATTERNS.map(([title, body], index) => (
+            <li key={title}>
+              <span className="zt-num">{String(index + 1).padStart(2, '0')}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="zt-callout">
+          The direction of the market was clear: <strong>from booking platforms to travel operating systems</strong> — less
+          friction, earlier, with more intelligence by default.
+        </p>
+      </Section>
+
+      {/* 05 / THE PEOPLE */}
+      <Section
+        id="zt-people"
+        number="05"
+        label="The people"
+        title="Six conversations, three kinds of user."
+        intro="Between 4 and 10 June I interviewed six ZipTrrip customers from six organisations — frequent travellers, travel coordinators and admins — about their last trips, their workarounds, and what they would and wouldn’t trust AI with."
+      >
+        <ul className="zt-segments">
+          {SEGMENTS.map(([name, who, goals]) => (
+            <li key={name}>
+              <h3>{name}</h3>
+              <p className="zt-segments__who">{who}</p>
+              <ul>{goals.map((goal) => <li key={goal}>{goal}</li>)}</ul>
+            </li>
+          ))}
+        </ul>
+        <p className="zt-note zt-note--block">
+          Managers and finance teams weren’t interviewed directly in this round; their side of the process came through the
+          travellers and admins who work with them.
+        </p>
+      </Section>
+
+      {/* 06 / FINDINGS */}
+      <Section
+        id="zt-findings"
+        number="06"
+        label="What I found"
+        title="People didn’t ask for more airlines. They asked for certainty."
+        intro="Five findings, each traced from what people said and did, to what it means, to what the product should do."
+        tone="soft"
+      >
+        <Findings />
+        <div className="zt-keep">
+          <p className="zt-label">What must not change</p>
+          <ul>
+            {KEEP.map(([name, body]) => (
+              <li key={name}><strong>{name}</strong><span>{body}</span></li>
             ))}
-          </p>
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 26 / THE BIGGEST TAKEAWAY */}
-    <Chapter id="zt-takeaway" number={26} title="The biggest takeaway" tone="ink" className="case-chapter--hero-moment">
-      <div className="case-grid">
-        <Col col="1 / span 11">
-          <h2 id="zt-takeaway-title" className="case-statement case-statement--xl">What should the user actually have to do?</h2>
-        </Col>
-        <Col col="1 / span 11">
-          <p className="case-meta case-label">And more importantly</p>
-          <p className="case-statement case-statement--xl case-statement--accent">What shouldn’t they have to do at all?</p>
-        </Col>
-        <Col col="1 / span 6">
-          <p className="case-body">
-            Good product design isn’t always about making the interface simpler. Sometimes the interface is only revealing a much
-            bigger system problem — and the real opportunity is to understand that system well enough to decide what it should do differently.
-          </p>
-        </Col>
-      </div>
-    </Chapter>
-
-    {/* 27 / REFLECTION */}
-    <Chapter id="zt-reflection" number={27} title="Reflection">
-      <div className="case-grid">
-        <Col col="1 / span 5">
-          <h2 id="zt-reflection-title" className="case-h2">Beyond the classroom brief.</h2>
-          <p className="case-body case-body--lead">This internship was my first experience designing beyond the safety of a classroom project.</p>
-          <ul className="case-nots">
-            <li>No perfectly defined brief.</li>
-            <li>No neatly packaged persona.</li>
-            <li>No fixed problem statement.</li>
           </ul>
-          <p className="case-body">
-            The problem kept changing as I learned more. I learned to be comfortable with ambiguity, defend my thinking, work
-            directly with stakeholders and move between research and execution.
-          </p>
-        </Col>
-        <Col col="7 / span 6" className="case-col--end">
-          <p className="case-meta case-label">I stopped treating UX as screen design. I started seeing it as</p>
-          <ol className="case-closing">
-            <li>Understanding a system,</li>
-            <li>finding where people struggle inside it,</li>
-            <li>and figuring out what the system should do differently.</li>
-          </ol>
-        </Col>
-      </div>
-    </Chapter>
+        </div>
+      </Section>
 
-    {/* 28 / NEXT PROJECT */}
-    {nextProject && (
-      <section className="case-chapter case-next" aria-labelledby="zt-next-title">
-        <div className="case-grid">
-          <Col col="1 / -1">
-            <p id="zt-next-title" className="case-meta case-next__label">
-              Next project <ArrowDown size={12} aria-hidden="true" />
+      {/* 07 / THE SHIFT */}
+      <Section
+        id="zt-shift"
+        number="07"
+        label="The strategic shift"
+        title="From booking travel to managing it."
+        intro="The research reframed the problem. Booking was already working reasonably well. What broke was everything around it — and that was where ZipTrrip could stand apart."
+      >
+        <div className="zt-shift" role="img" aria-label="ZipTrrip 1.0 helped users book travel. ZipTrrip 2.0 should help organisations manage travel: from a corporate travel booking platform to a corporate travel operating system.">
+          <div>
+            <p className="zt-label">ZipTrrip 1.0</p>
+            <p className="zt-shift__from">Helped users <em>book</em> travel</p>
+            <p className="zt-shift__sub">Corporate travel booking platform</p>
+          </div>
+          <ArrowRight className="zt-shift__arrow" size={28} aria-hidden="true" />
+          <div>
+            <p className="zt-label">ZipTrrip 2.0</p>
+            <p className="zt-shift__to">Helps organisations <em>manage</em> travel</p>
+            <p className="zt-shift__sub">Corporate travel operating system</p>
+          </div>
+        </div>
+        <ul className="zt-principles">
+          <li><strong>Reduce thinking before reducing clicks.</strong><span>Cognitive load, not click count, is the real cost of business travel.</span></li>
+          <li><strong>Never ask what the platform already knows.</strong><span>Preferences, policy, managers and past trips shouldn’t be re-entered.</span></li>
+          <li><strong>Confidence is the product.</strong><span>Answer “is it confirmed? has it been approved?” before anyone has to ask.</span></li>
+          <li><strong>Every recommendation must be explainable.</strong><span>“Stayed here before”, “within policy”, “400 m from the client office”.</span></li>
+        </ul>
+        <p className="zt-note">Principles from the ZipTrrip 2.0 product manifesto I wrote with the research.</p>
+      </Section>
+
+      {/* 08 / OPPORTUNITIES */}
+      <Section
+        id="zt-opportunities"
+        number="08"
+        label="Opportunity areas"
+        title="Eight pillars — not all equal."
+        intro="I grouped the findings into eight opportunity pillars for ZipTrrip 2.0, and weighted them by how often and how severely they came up."
+        tone="soft"
+      >
+        <div className="zt-split zt-split--wide">
+          <div>
+            <p className="zt-label">Themes, by number of interviews</p>
+            <ul className="zt-bars" aria-label="Themes by number of interviews, out of six">
+              {THEMES.map(([name, count]) => (
+                <li key={name}>
+                  <span className="zt-bars__name">{name}</span>
+                  <span className="zt-bars__track"><span style={{ width: `${(count / 6) * 100}%` }} /></span>
+                  <span className="zt-bars__value">{count}/6</span>
+                </li>
+              ))}
+            </ul>
+            <p className="zt-callout zt-callout--tight">
+              <strong>Approvals mattered most.</strong> They came up in five of six interviews, they cost money — fares rose
+              while requests waited — and they strained relationships between travellers and their managers.
             </p>
-            <h2 className="case-next__title">{nextProject.title} →</h2>
-          </Col>
-          <Col col="1 / -1" className="case-next__card">
+          </div>
+          <ol className="zt-pillars">
+            {PILLARS.map(([name, body, weight], index) => (
+              <li key={name} className={weight ? 'is-primary' : ''}>
+                <span className="zt-num">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3>{name}</h3>
+                  <p>{body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <Figure
+          src={opportunityMatrix}
+          alt="Opportunity prioritisation matrix: fix the critical bugs, show hotel phone numbers, notify travellers of price changes and show seat availability now; plan and build cab booking, approval intelligence, hotel ratings, self-service cancellation, an invoice hub, a trip workspace and an emergency mode"
+          source="Research repository · opportunity matrix"
+          caption="Quick wins first — mostly reliability fixes — then the larger bets."
+          onZoom={zoom}
+        />
+      </Section>
+
+      {/* 09 / DESIGN EXPLORATION */}
+      <Section
+        id="zt-design"
+        number="09"
+        label="Design exploration"
+        title="From one conversation to a trip-first product."
+        intro="Two directions, developed at different points in the internship: a conversational assistant prototyped early, and a ZipTrrip 2.0 structure and user flow designed after the research."
+      >
+        <div className="zt-direction">
+          <div className="zt-direction__text">
+            <p className="zt-label">Direction A · Conversational assistant · late May</p>
+            <h3 className="zt-h3">Tell it where you’re going. It handles the rest.</h3>
+            <p>
+              A single conversation that carries a trip from request to approval, built and iterated through 14 versions.
+              Recommendations explain themselves, policy shows inline, and the approval shows exactly where it is.
+            </p>
+            <p className="zt-aside">
+              I built it before the interviews. They reshaped it: users wanted an assistant that suggests, not an agent that
+              books — so in 2.0, AI became an optional path rather than the only one.
+            </p>
+          </div>
+          <div className="zt-gallery">
+            <Figure src={protoFlights} alt="Prototype: flight options for a Mumbai to Bangalore trip, with policy tags and a recommended flight explaining why — within company policy, lands two hours before the meeting, booked on this route before" source="Recommend" caption="Every recommendation says why." onZoom={zoom} />
+            <Figure src={protoHotels} alt="Prototype: two hotels near the client office in Whitefield, showing distance from the office, review score, policy status and free cancellation" source="Compare" caption="Distance from where the work is." onZoom={zoom} />
+            <Figure src={protoApproval} alt="Prototype: an approval request sent on WhatsApp, with a timeline of request created, sent, viewed by manager, decision pending and booking confirmed, plus expected time and amount" source="Approve" caption="The approval, no longer a black box." onZoom={zoom} />
+          </div>
+          <p className="zt-note">Prototype with sample data. Not shipped.</p>
+        </div>
+
+        <div className="zt-direction">
+          <div className="zt-direction__text">
+            <p className="zt-label">Direction B · ZipTrrip 2.0 · July</p>
+            <h3 className="zt-h3">Organised around trips, not bookings.</h3>
+            <p>
+              The proposed structure replaces separate flight and hotel tabs with Trips and a Workspace for everything about
+              one trip — plus Recovery for when plans change, and Memory so the platform never asks twice.
+            </p>
+          </div>
+          <div className="zt-pair zt-pair--ia">
+            <Figure src={sections20} alt="ZipTrrip 2.0 information architecture: Home, Trips, Discover, Workspace, Recovery, Memory and Admin, with what each section contains" source="2.0 · information architecture" onZoom={zoom} />
+            <Figure src={model20} alt="ZipTrrip 2.0 system model: a user’s need to visit Bangalore passes through an intent engine using memory, policy and company data, then a recommendation engine for flights, hotels, buses, cabs, trains and approvals, into a trip workspace, continuous recovery and journey memory" source="2.0 · system model" onZoom={zoom} />
+          </div>
+          <Figure
+            src={userflow20}
+            alt="ZipTrrip 2.0 end-to-end user flow: an AI path and a quick-booking path for flights, hotels, buses, trains and cabs, each showing three preferences based on travel history with reasons, triggers to add related bookings, approval, and a branch that notifies the traveller and admin if the price increases"
+            source="2.0 · end-to-end user flow"
+            caption="Each service shows three options based on travel history, with reasons. Related bookings are suggested in context. If a fare rises, the traveller and admin are told and the approval is re-sent."
+            onZoom={zoom}
+          />
+          <p className="zt-note">Proposed flow. Click any image to read it at full size.</p>
+        </div>
+
+        <p className="zt-label zt-label--spaced">How the designs answer the findings</p>
+        <ul className="zt-responses">
+          {RESPONSES.map(([problem, response, where]) => (
+            <li key={problem}>
+              <span className="zt-responses__problem">{problem}</span>
+              <ArrowRight size={16} aria-hidden="true" />
+              <span className="zt-responses__response">{response}</span>
+              <span className="zt-responses__where">{where}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      {/* 10 / OUTCOME */}
+      <Section
+        id="zt-outcome"
+        number="10"
+        label="The outcome"
+        title="What I handed over."
+        intro="The internship produced research, a strategy and design directions — recommendations and concepts for the founders and product team, not shipped features."
+        tone="soft"
+      >
+        <div className="zt-delivered">
+          {DELIVERED.map(([group, items]) => (
+            <div key={group}>
+              <h3>{group}</h3>
+              <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* 11 / REFLECTION */}
+      <Section id="zt-reflection" number="11" label="Reflection" title="The interface was the smallest part.">
+        <div className="zt-reflection">
+          <div>
+            <h3>Research before solutions</h3>
+            <p>
+              My first prototype came before I had spoken to a single customer. The interviews changed it — and changed how
+              I start. I used to jump straight to a solution; now I want the evidence first.
+            </p>
+          </div>
+          <div>
+            <h3>Contradictions are data</h3>
+            <p>
+              One person wanted fewer approval layers; another needed them for control. One would trust AI with everything;
+              another wouldn’t trust it with a non-refundable fare. Looking for patterns across everyone, not one strong
+              opinion, made the recommendations defensible.
+            </p>
+          </div>
+          <div>
+            <h3>Design the system around the screen</h3>
+            <p>
+              The hardest problems sat between people — managers, admins, finance, support. Experience design in an
+              enterprise product means designing for that whole system, not just the booking screen.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      {/* NEXT PROJECT */}
+      {nextProject && (
+        <section className="zt-next" aria-labelledby="zt-next-title">
+          <div className="zt-wrap">
+            <p id="zt-next-title" className="zt-kicker">Next project <ArrowUpRight size={12} aria-hidden="true" /></p>
             <ol className="archive__list archive__list--single">
               <ProjectRow project={nextProject} index={2} onOpen={onOpenProject} />
             </ol>
-          </Col>
-        </div>
-      </section>
-    )}
-  </article>
-);
+          </div>
+        </section>
+      )}
+
+      <Lightbox image={zoomed} onClose={() => setZoomed(null)} />
+    </article>
+  );
+};
 
 export default ZiptrripCaseStudy;

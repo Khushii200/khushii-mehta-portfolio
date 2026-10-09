@@ -58,7 +58,7 @@ const ProjectDetail = ({ project, onBack, nextProject, onOpenProject }) => {
   const isZiptrrip = project.id === 5;
 
   return (
-    <div className="project-detail fixed inset-0 z-[200] overflow-y-auto animate-fade-in">
+    <div className={`project-detail fixed inset-0 z-[200] overflow-y-auto animate-fade-in`}>
       <nav className="project-detail__nav sticky top-0 w-full px-6 md:px-12 py-6 flex justify-between items-center backdrop-blur-xl z-[210]">
         <button 
           onClick={onBack}
