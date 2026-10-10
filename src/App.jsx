@@ -25,6 +25,7 @@ import { PencilCursor } from './components/cursor/PencilCursor';
 import { About } from './components/about/About';
 import { BsnlCaseStudy } from './components/case-study/BsnlCaseStudy';
 import { ZiptrripCaseStudy } from './components/case-study/ZiptrripCaseStudy';
+import { SolarlinkCaseStudy } from './components/case-study/SolarlinkCaseStudy';
 
 // --- Fun Doodle Components ---
 const ScribbleUnderline = () => (
@@ -73,6 +74,8 @@ const ProjectDetail = ({ project, onBack, nextProject, onOpenProject }) => {
         <BsnlCaseStudy project={project} nextProject={nextProject} onOpenProject={onOpenProject} />
       ) : isZiptrrip ? (
         <ZiptrripCaseStudy project={project} nextProject={nextProject} onOpenProject={onOpenProject} />
+      ) : isSolar ? (
+        <SolarlinkCaseStudy project={project} nextProject={nextProject} onOpenProject={onOpenProject} />
       ) : (
       <div className="legacy-case max-w-[1400px] mx-auto px-6 md:px-12 py-20">
         <header className="mb-24">
@@ -1311,7 +1314,7 @@ const App = () => {
       description: "VOIA is a wearable that enables discreet, real-time communication between teachers and deaf-mute students using light and vibration.",
       disciplines: "Inclusive Design · Wearable Technology",
       summary: "A wearable for discreet, real-time classroom communication with deaf-mute students.",
-      status: "completed",
+      status: "locked",
       image: voiaVisual,
       year: "2024",
       tags: ["Wearable", "Inclusive Design", "Hardware"],
