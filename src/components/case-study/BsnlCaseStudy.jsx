@@ -1,15 +1,13 @@
-import React from 'react';
-import { ArrowDown, ArrowUpRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { CasePlaceholder } from './CasePlaceholder';
+import { Figure, Lightbox } from './CaseKit';
 import { ProjectRow } from '../work/ProjectRow';
 import bsnlFramework from '../../assets/bsnl-framework-rings.png';
-import bsnlCostImpact from '../../assets/bsnl-cost-impact.png';
-import bsnlResearchEvidence from '../../assets/bsnl-research-evidence.webp';
-import bsnlChallenge from '../../assets/bsnl-challenge.webp';
 import bsnlWhatsappPrototype from '../../assets/bsnl-whatsapp-prototype.webp';
-import bsnlAppPrototype from '../../assets/bsnl-app-prototype.webp';
+import bsnlCampaignBoard from '../../assets/bsnl-campaign-board.jpg';
 import bsnlLogo from '../../assets/bsnl-logo.png';
-import bsnlIndustryLandscape from '../../assets/bsnl-industry-landscape.webp';
+import bsnlResearchBoard from '../../assets/bsnl-research-board.jpg';
 import bsnlPlayStoreReviews from '../../assets/bsnl-play-store-reviews.webp';
 import bsnlEmpathyMap from '../../assets/bsnl-empathy-map.png';
 import bsnlCompetitorAnalysis from '../../assets/bsnl-competitor-analysis.webp';
@@ -21,9 +19,9 @@ import bsnlJourneyMap from '../../assets/bsnl-journey-map.png';
 
 const META = [
   ['Project type', 'Design Strategy'],
-  ['Role', 'Design Strategy / Research / UX'],
+  ['Role', 'Design Strategy + Research + UX'],
   ['Focus', 'Repositioning & B2C Strategy'],
-  ['Timeline', '12 May — 12 July 2025'],
+  ['Duration', '2 months · 12 May — 12 July 2025'],
 ];
 
 const CONTEXT = [
@@ -79,6 +77,52 @@ const ROADMAP = [
   ['Ecosystem & retention', '18–24 months', 'Build long-term engagement and relevance.'],
 ];
 
+/* Problem statement — what exists vs. what people perceive (from the team’s “From research to the problem” board) */
+const HAS = [
+  ['Legacy & trust', 'A well-known, trusted name across generations.'],
+  ['Nationwide infrastructure', 'One of the largest telecom networks in India.'],
+  ['Wide network reach', 'Present in urban, semi-urban and rural India.'],
+  ['Access for all', 'Continues to serve rural and remote areas.'],
+  ['Existing user base', 'A loyal customer base, especially in rural India.'],
+];
+const FEELS = [
+  ['Outdated', 'Feels like an uncle brand.'],
+  ['Disconnected', 'Confusing experience and low visibility digitally.'],
+  ['Unrelatable', 'No modern voice, no personalisation, no cultural relevance.'],
+];
+
+/* The research board, grouped in reading order (labels as they appear on the board) */
+const BOARD = [
+  ['Inputs', 'Competitor websites', ['Jio', 'Airtel', 'Vodafone Idea', 'AT&T', 'Verizon', 'BSNL’s own pages']],
+  ['Analysis', 'Structured comparison', ['SWOT analysis', 'Competitor analysis', 'Similarities · Differences · Learnings · Opportunities']],
+  ['Synthesis', 'Where BSNL should go', ['To-be journey', 'Ideation', 'Tone of voice', 'Mascot sketches (Signal Singh)']],
+  ['Design', 'First service flow', ['User flow for the WhatsApp bot “BHARAT”']],
+];
+
+/* Evidence behind each insight — quotes, reviews and journey friction from the research synthesis board */
+const EVIDENCE = [
+  [['“Main toh BSNL ke saath bada hua. Par ab lagta hai jaise apne hi ghar ko bhool gaye sab.”', 'Bharat Sinha · ex-BSNL employee, 52'], ['“Good network in rural areas but app is very confusing.”', 'Play Store review']],
+  [['“BSNL feels like an uncle brand. Why would I switch unless it’s smarter and cheaper?”', 'Riya Sharma · design student, 21'], ['“Feels old compared to Jio/Airtel. Needs innovation.”', 'Play Store review']],
+  [['“Mujhe bas yeh samajhna hai — kab khatam hoga, aur dubara kaise bharna hai.”', 'Shivram Mahato · farmer, 38'], ['Finds plans confusing and hard to understand — too many options, technical jargon.', 'Journey mapping · compare']],
+  [['“I don’t need so many options. Just tell me what’s best — in my language.”', 'Meenakshi Iyer · retired principal, 64'], ['Relies on shopkeepers or family to recharge; turns to shopkeepers or WhatsApp for help.', 'Journey mapping · recharge & support']],
+];
+
+/* Idea prioritisation — every idea placed by impact and cost (team matrix) */
+const PRIORITY = [
+  ['High impact', 'Low cost', 'Do first', ['Social media storytelling (trust, unboxing, SIM legacy)', 'Mascot introduction (Signal Singh)', 'Regional festival offers', '“Your data stays in India” narrative', 'Night data boosters for students', 'Native language UI + “Senior Mode”', 'Proactive WhatsApp support + recharge reminders', 'Twitter + LinkedIn brand updates']],
+  ['High impact', 'High cost', 'Plan & invest', ['BSNL Pay digital wallet + UPI gateway', 'Online BSNL University', 'AI financial advisor for telecom budgeting', 'BSNL dongles & keypad phones with student bundles', 'WhatsApp chatbot with voice, eKYC, plan optimisation', 'Creator partnerships, rural content grants']],
+  ['Low impact', 'Low cost', 'Quick extras', ['Cybersecurity email series', 'LinkedIn job hiring posts', 'DND toggle features in app', 'App-only spam blocker']],
+  ['Low impact', 'High cost', 'Deprioritise', ['Real-time doubt-solving with professional tutors', 'Micro-loans for prepaid recharge', 'BSNL marketplace inside the app', 'Full OTT bundling (Disney+, Netflix, etc.)', 'Loyalty programs with 3rd-party coupons (Amazon, Flipkart)']],
+];
+
+/* Campaign & chatbot board, grouped into broader directions */
+const CAMPAIGNS = [
+  ['Brand voice on social', 'Making BSNL visible where younger users already are.', ['Twitter sample messages', 'LinkedIn sample messages']],
+  ['Retention & trust', 'Staying in touch before users drift away.', ['Proactive retention strategy on WhatsApp', 'Cyber security email series']],
+  ['Guided service on WhatsApp', 'Everyday tasks through a conversation, not an app.', ['Bill payment flow for an older user', 'Applying for a new connection']],
+  ['Plans & offers', 'Clearer, more relatable plans.', ['Postpaid plans']],
+];
+
 const PROTOTYPES = {
   app: 'https://www.figma.com/make/F5UjMEU9MOCOlV82DxlD6T/Khushi---Piyush-Collaboration-FM-BSNL-app--Copy-?t=34z5jtw7tpwiani2-1',
   chatbot: 'https://www.figma.com/design/eWPd5da2R0TAQfYtFP5dF8/BSNL-whatsapp-chatbot?node-id=0-1&t=LH8YBRd5JbNSFOC0-1',
@@ -127,10 +171,54 @@ const NumberedList = ({ items, className = '' }) => (
   </ol>
 );
 
+/* Market share as a pie. The source gives approximate ranges for the three private
+   operators; slices use the midpoint and are labelled with the range. The remainder
+   (BSNL and others) isn’t broken down in the source, so it isn’t split. */
+const MarketPie = () => {
+  const slices = [...MARKET.map(([name, value, label, voice]) => ({ name, value, label, voice }))];
+  const rest = 100 - slices.reduce((sum, s) => sum + s.value, 0);
+  slices.push({ name: 'BSNL & others', value: rest, label: `≈${Math.round(rest)}% remainder`, voice: 'Not broken down in the source', muted: true });
+  // each operator in its own brand colour (Jio blue, Airtel red, Vi yellow); the unsplit remainder stays neutral
+  const shades = ['#2f5bea', '#e3342f', '#f5c518', '#5f5d59'];
+  let angle = -90;
+  const r = 70; const c = 80;
+  const arc = (start, sweep) => {
+    const a0 = (start * Math.PI) / 180; const a1 = ((start + sweep) * Math.PI) / 180;
+    const large = sweep > 180 ? 1 : 0;
+    return `M ${c} ${c} L ${c + r * Math.cos(a0)} ${c + r * Math.sin(a0)} A ${r} ${r} 0 ${large} 1 ${c + r * Math.cos(a1)} ${c + r * Math.sin(a1)} Z`;
+  };
+  return (
+    <figure className="bsnl-pie">
+      <p className="case-meta">Market share · 2024</p>
+      <svg viewBox="0 0 160 160" role="img" aria-label={slices.map((s) => `${s.name} ${s.label}`).join(', ')}>
+        {slices.map((s, i) => {
+          const sweep = (s.value / 100) * 360;
+          const d = arc(angle, sweep);
+          angle += sweep;
+          return <path key={s.name} d={d} fill={shades[i]} stroke="#0a0a0a" strokeWidth="1.5" />;
+        })}
+      </svg>
+      <ul className="bsnl-pie__legend">
+        {slices.map((s, i) => (
+          <li key={s.name}>
+            <i style={{ background: shades[i] }} aria-hidden="true" />
+            <strong>{s.name}</strong>
+            <span>{s.label}</span>
+            <em>{s.voice}</em>
+          </li>
+        ))}
+      </ul>
+      <figcaption>Private players compete on speed, pricing and bundled ecosystems. Shares are approximate ranges from secondary research.</figcaption>
+    </figure>
+  );
+};
+
 /* ------------------------------------------------------------------ */
 
-export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
-  <article className="case-study">
+export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => {
+  const [zoomed, setZoomed] = useState(null);
+  return (
+  <article className="case-study case-study--bsnl">
     {/* 01 / HERO */}
     <header className="case-hero">
       <div className="case-grid">
@@ -142,6 +230,7 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
         </Col>
         <Col col="1 / span 6" md="1 / -1">
           <p className="case-lede">A strategic repositioning of India’s telecom legacy to win back the digital-first generation.</p>
+          <p className="bsnl-byline">By Khushii Mehta — a 4th-year Experience Design student at FLAME University.</p>
         </Col>
         <Col col="8 / span 5" md="1 / -1">
           <dl className="case-facts">
@@ -152,9 +241,6 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
               </div>
             ))}
           </dl>
-        </Col>
-        <Col col="1 / -1" className="case-hero__visual">
-          <CasePlaceholder kind="Hero image" label="BSNL project visual" ratio="16:9" size="hero" src={project.image} alt="" />
         </Col>
       </div>
     </header>
@@ -188,16 +274,37 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
           <NumberedList items={CHALLENGES} className="case-points--row" />
         </Col>
         <Col col="1 / -1">
-          <CasePlaceholder label="Problem / challenge visual" ratio="16:9" src={bsnlChallenge} alt="From research to the problem: what BSNL already has — legacy and trust, nationwide infrastructure, wide network reach, access for all, an existing user base — versus what younger users feel: outdated, disconnected, unrelatable. The gap isn’t access, it’s relevance." />
+          <div className="bsnl-gap" aria-label="From research to the problem: what exists versus what people perceive">
+            <div className="bsnl-gap__side">
+              <p className="case-meta">What BSNL already has</p>
+              <h3 className="bsnl-gap__title">A strong foundation.</h3>
+              <ul>
+                {HAS.map(([name, body]) => <li key={name}><strong>{name}</strong><span>{body}</span></li>)}
+              </ul>
+            </div>
+            <div className="bsnl-gap__centre">
+              <p className="case-meta">The gap isn’t access</p>
+              <p className="bsnl-gap__word">It’s relevance.</p>
+              <p className="bsnl-gap__note">People still remember BSNL, but it no longer fits into their current, digital-first lives.</p>
+            </div>
+            <div className="bsnl-gap__side">
+              <p className="case-meta">What younger users feel</p>
+              <h3 className="bsnl-gap__title">A brand that feels out of place.</h3>
+              <ul>
+                {FEELS.map(([name, body]) => <li key={name}><strong>{name}</strong><span>{body}</span></li>)}
+              </ul>
+            </div>
+          </div>
         </Col>
       </div>
     </Chapter>
 
-    {/* 04 / INVESTIGATION */}
-    <Chapter id="bsnl-research" number={4} title="Investigation">
+    {/* 04 / SECONDARY RESEARCH */}
+    <Chapter id="bsnl-research" number={4} title="Secondary research">
       <div className="case-grid">
         <Col col="1 / span 6">
           <h2 id="bsnl-research-title" className="case-h2">Five lenses on one problem.</h2>
+          <p className="case-body case-body--lead">I started wide — the market, the competitors and what users were already saying online — before talking to anyone.</p>
         </Col>
         <Col col="1 / -1">
           <ol className="case-methods">
@@ -211,34 +318,60 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
           </ol>
         </Col>
 
-        <Col col="1 / span 8">
-          <CasePlaceholder label="Secondary research / industry landscape" ratio="2000:1199" src={bsnlIndustryLandscape} alt="Research board for the telecommunication industry: competitor websites, SWOT analysis, competitor analysis and the BHARAT WhatsApp bot user flow" />
-          <Caption index={1} title="Industry landscape">TRAI reports, telecom and fintech trends, AI adoption and cultural frameworks.</Caption>
-        </Col>
-        <Col col="9 / span 4" className="case-col--end">
-          <div className="case-data" aria-label="Market share, as of 2024">
-            <p className="case-meta">Market share · 2024</p>
-            {MARKET.map(([name, value, label, voice]) => (
-              <div key={name} className="case-data__row">
-                <div className="case-data__label">
-                  <strong>{name}</strong>
-                  <span>{label}</span>
-                </div>
-                <div className="case-data__bar"><span style={{ width: `${value}%` }} /></div>
-                <p className="case-data__note">{voice}</p>
-              </div>
+        <Col col="1 / -1">
+          <p className="case-meta bsnl-board__label">The research board, in reading order</p>
+          <ol className="bsnl-board">
+            {BOARD.map(([phase, title, items], index) => (
+              <li key={phase}>
+                <span className="case-points__num">{pad(index + 1)} · {phase}</span>
+                <h3 className="case-sub">{title}</h3>
+                <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
+                {index < BOARD.length - 1 && <ArrowRight className="bsnl-board__arrow" size={16} aria-hidden="true" />}
+              </li>
             ))}
-            <p className="case-caption case-caption--tight">Private players compete on speed, pricing and bundled ecosystems.</p>
-          </div>
+          </ol>
+        </Col>
+        <Col col="1 / span 7">
+          <Figure
+            src={bsnlResearchBoard}
+            alt="The FigJam research board: competitor websites (Jio, Airtel, Vodafone Idea, AT&T, Verizon), a SWOT analysis, a competitor analysis with similarities, differences, learnings and opportunities, a to-be journey, ideation, tone of voice, mascot sketches and the user flow for the WhatsApp bot BHARAT"
+            source="Research board · overview"
+            caption="The whole board at a glance — click to open it. Each group above maps to a cluster here: competitor websites in the centre, analysis on the right, the BHARAT flow at the bottom."
+            onZoom={setZoomed}
+          />
+        </Col>
+        <Col col="8 / span 5">
+          <MarketPie />
         </Col>
 
         <Col col="1 / span 6" md="1 / span 6">
           <CasePlaceholder label="Competitor analysis" ratio="2000:1190" src={bsnlCompetitorAnalysis} fit="contain" alt="Competitor analysis of Reliance Jio, Airtel and Vodafone Idea: network, pricing, ecosystem, support, image and reach" className="case-visual--light" />
-          <Caption index={2} title="Competitor analysis">Jio, Airtel and Vi benchmarked on tech, pricing, ecosystem, voice and dominance.</Caption>
+          <Caption index={1} title="Competitor analysis">Jio, Airtel and Vi compared on network, pricing, ecosystem, support, image and reach — showing where BSNL could still compete.</Caption>
         </Col>
         <Col col="7 / span 6" md="7 / span 6">
           <CasePlaceholder label="Digital listening / Play Store reviews" ratio="2000:1190" src={bsnlPlayStoreReviews} alt="A collage of BSNL app reviews from the Play Store, mostly one- to three-star complaints about failed payments, missing plan details, network drops and scattered apps" />
-          <Caption index={3} title="Digital listening">200+ Play Store reviews clustered to surface real user friction.</Caption>
+          <Caption index={2} title="Digital listening">A selection from 200+ Play Store reviews. Most praise the network and fault the app — payments, plan details and support — which pointed the research at the experience, not coverage.</Caption>
+        </Col>
+      </div>
+
+      <div className="case-grid bsnl-bridge">
+        <Col col="1 / span 5">
+          <p className="case-meta">What desk research established</p>
+          <p className="case-body">A market led by Jio, Airtel and Vi competing on speed, pricing and bundled ecosystems — and an app users rate for its network, not its experience.</p>
+        </Col>
+        <Col col="7 / span 6">
+          <p className="case-meta">What it couldn’t answer</p>
+          <p className="case-body">Why do people who trust BSNL still not engage with it? How do different users actually recharge, pay and get help? Reviews show what goes wrong — not why, or for whom. That needed direct research.</p>
+        </Col>
+      </div>
+    </Chapter>
+
+    {/* 05 / USER RESEARCH */}
+    <Chapter id="bsnl-users" number={5} title="User research">
+      <div className="case-grid">
+        <Col col="1 / span 7">
+          <h2 id="bsnl-users-title" className="case-h2">Listening to the people behind the numbers.</h2>
+          <p className="case-body case-body--lead">Interviews with BSNL and non-BSNL users across age groups, synthesised into personas, an empathy map and an as-is journey.</p>
         </Col>
 
         <Col col="1 / -1">
@@ -253,18 +386,18 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
           </ul>
         </Col>
         <Col col="1 / span 5">
-          <CasePlaceholder label="User personas / empathy map" ratio="1452:974" src={bsnlEmpathyMap} alt="Empathy map: what BSNL users say, think, see and hear — from relying on family to recharge, to fearing the wrong plan, to jargon with no explanation" className="case-visual--light" />
-          <Caption index={4} title="User research">Three personas — loyalist, skeptic, first-time user — and what they say, think, see and hear.</Caption>
+          <CasePlaceholder label="Empathy map — Says, Thinks, Sees, Hears" ratio="1452:974" src={bsnlEmpathyMap} alt="Empathy map (Says, Thinks, Sees, Hears) for an older BSNL user: what they say, think, see and hear — from relying on family to recharge, to fearing the wrong plan, to jargon with no explanation" className="case-visual--light" />
+          <Caption index={1} title="Empathy map · Says, Thinks, Sees, Hears">One map for the older, family-reliant user: what they say, think, see and hear around recharging — dependence on family, fear of the wrong plan, jargon with no explanation.</Caption>
         </Col>
         <Col col="6 / span 7">
           <CasePlaceholder label="As-is journey map" ratio="1414:844" src={bsnlJourneyMap} alt="As-is journey map for Meena across six stages — recharge awareness, search, payment, plan usage, customer service and retention — with actions, touchpoints, pain points and emotions from frustrated to willing to switch" className="case-visual--light" />
-          <Caption index={5} title="Journey map">From expiry to exit — every stage adds dependence, confusion or silence.</Caption>
+          <Caption index={2} title="As-is journey map · Meena">Six stages from recharge awareness to retention. Each one adds dependence, confusion or silence — until switching feels easier than staying.</Caption>
         </Col>
       </div>
     </Chapter>
 
-    {/* 05 / WHAT I FOUND */}
-    <Chapter id="bsnl-insights" number={5} title="What I found">
+    {/* 06 / WHAT I FOUND */}
+    <Chapter id="bsnl-insights" number={6} title="What I found">
       <div className="case-grid">
         <Col col="1 / span 10">
           <h2 id="bsnl-insights-title" className="case-statement">
@@ -272,24 +405,35 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
           </h2>
         </Col>
         <Col col="1 / -1">
-          <ol className="case-insights">
+          <ol className="bsnl-findings">
             {INSIGHTS.map(([title, body], index) => (
               <li key={title}>
-                <span className="case-insights__num">{pad(index + 1)}</span>
-                <h3 className="case-sub">{title}</h3>
-                <p className="case-body">{body}</p>
+                <div className="bsnl-findings__claim">
+                  <span className="case-points__num">{pad(index + 1)}</span>
+                  <h3 className="case-sub">{title}</h3>
+                  <p className="case-body">{body}</p>
+                </div>
+                <ul className="bsnl-findings__evidence" aria-label="Evidence">
+                  {EVIDENCE[index].map(([quote, source]) => (
+                    <li key={quote}><p>{quote}</p><span>{source}</span></li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ol>
         </Col>
         <Col col="1 / -1">
-          <CasePlaceholder label="Supporting research evidence / insight synthesis" ratio="16:9" src={bsnlResearchEvidence} alt="Research evidence board: user interviews, app reviews and digital touchpoints, journey mapping and secondary research, leading to the final insight — trusted, but not relevant" />
+          <div className="bsnl-verdict">
+            <p className="case-meta">Final insight</p>
+            <p className="bsnl-verdict__line">Trusted, but not relevant.</p>
+            <p className="case-body">The gap is not access. It is clarity, confidence and relevance — which is why the strategy had to change how BSNL feels and works, not where it reaches.</p>
+          </div>
         </Col>
       </div>
     </Chapter>
 
-    {/* 06 / STRATEGIC DIRECTION */}
-    <Chapter id="bsnl-direction" number={6} title="Strategic direction">
+    {/* 07 / STRATEGIC DIRECTION */}
+    <Chapter id="bsnl-direction" number={7} title="Strategic direction">
       <div className="case-grid">
         <Col col="1 / span 7">
           <h2 id="bsnl-direction-title" className="case-statement">
@@ -311,37 +455,63 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
             ))}
           </ol>
         </Col>
-        <Col col="1 / span 7">
+        <Col col="3 / span 8">
           <CasePlaceholder src={bsnlFramework} alt="Concentric framework: Trust (BSNL’s only current advantage) at the core, then Tech (GenAI, UX redesign, plan personalisation), Tone (speak Gen Z, but stay Bharat) and Tribe (creators, loyalists, underserved markets)" label="Strategic framework" ratio="16:10" fit="contain" className="case-visual--light" />
-          <Caption index={1} title="Trust → Tech → Tone → Tribe">Trust sits at the core; each outer ring makes BSNL easier, more relevant and more personal.</Caption>
+          <Caption index={1} title="Trust → Tech → Tone → Tribe">Trust — BSNL’s one existing advantage — sits at the core. Each outer ring makes it easier to use, more relevant and more personal.</Caption>
         </Col>
-        <Col col="8 / span 5">
-          <CasePlaceholder label="Cost × impact matrix" ratio="806:690" src={bsnlCostImpact} alt="Cost versus impact matrix: high-impact low-cost ideas such as trust storytelling, the Signal Singh mascot, native-language UI and WhatsApp reminders; high-impact high-cost ideas such as BSNL Pay, Online BSNL University and the WhatsApp chatbot; plus low-impact ideas in both cost bands" className="case-visual--light" />
-          <Caption index={2} title="Cost × impact" />
+        <Col col="1 / -1">
+          <h3 className="bsnl-subhead">Idea Prioritization</h3>
+          <p className="case-body bsnl-subhead__intro">Every idea from ideation was placed on two axes — impact on users and cost to BSNL — to decide what to do first.</p>
+          <div className="bsnl-matrix" role="table" aria-label="Ideas placed by impact and cost">
+            {PRIORITY.map(([impact, cost, verdict, items]) => (
+              <div key={`${impact}-${cost}`} className={`bsnl-matrix__cell ${impact === 'High impact' && cost === 'Low cost' ? 'is-first' : ''}`} role="row">
+                <p className="case-meta">{impact} · {cost}</p>
+                <h4>{verdict}</h4>
+                <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
+              </div>
+            ))}
+          </div>
+          <Caption index={2} title="Idea Prioritization">High-impact, low-cost ideas lead — most of them trust-building communication and simpler, native-language experiences.</Caption>
         </Col>
       </div>
     </Chapter>
 
-    {/* 07 / THE OUTCOME */}
-    <Chapter id="bsnl-outcome" number={7} title="The outcome">
+    {/* 08 / THE OUTCOME */}
+    <Chapter id="bsnl-outcome" number={8} title="The outcome">
       <div className="case-grid">
         <Col col="1 / span 6">
           <h2 id="bsnl-outcome-title" className="case-h2">From strategy to experience.</h2>
           <p className="case-body case-body--lead">Prototypes that make recharge, support and onboarding simple — and a 24-month plan to roll them out.</p>
         </Col>
         <Col col="1 / -1">
-          <CasePlaceholder kind="Large image placeholder" label="BSNL app prototype — recharge, support & onboarding" ratio="2000:1197" size="large" src={bsnlAppPrototype} alt="BSNL WhatsApp chatbot design board: proactive retention messages, Twitter and LinkedIn sample posts, a cyber security email series, bill payment and new connection flows, and postpaid plans" />
+          <h3 className="bsnl-subhead">Campaigns & conversations</h3>
+          <ul className="bsnl-campaigns">
+            {CAMPAIGNS.map(([category, why, items]) => (
+              <li key={category}>
+                <h4>{category}</h4>
+                <p>{why}</p>
+                <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
+              </li>
+            ))}
+          </ul>
+          <Figure
+            src={bsnlCampaignBoard}
+            alt="The campaign and chatbot board: a proactive retention strategy on WhatsApp, Twitter and LinkedIn sample messages, a cyber security email series, a bill payment flow for an older user, a new connection flow and postpaid plans"
+            source="Campaign & chatbot board"
+            caption="The full board — click to open it. Every artefact sits in one of the four directions above."
+            onZoom={setZoomed}
+          />
           <div className="case-caption case-caption--split">
-            <span className="case-meta">01 / App prototype</span>
+            <span className="case-meta">BSNL app prototype</span>
             <a className="case-link" href={PROTOTYPES.app} target="_blank" rel="noopener noreferrer">
-              Open prototype in Figma <ArrowUpRight size={14} aria-hidden="true" />
+              Open app prototype in Figma <ArrowUpRight size={14} aria-hidden="true" />
             </a>
           </div>
         </Col>
         <Col col="1 / -1">
           <CasePlaceholder kind="Large image placeholder" label="Bharat — WhatsApp assistant prototype" ratio="16:9" size="large" src={bsnlWhatsappPrototype} alt="Bharat WhatsApp assistant prototype: a BSNL screen asking the user to choose their preferred language — Hindi, Marathi or English" />
           <div className="case-caption case-caption--split">
-            <span className="case-meta">02 / Bharat, WhatsApp assistant</span>
+            <span className="case-meta">Bharat, WhatsApp assistant — starts by asking which language you’d like</span>
             <a className="case-link" href={PROTOTYPES.chatbot} target="_blank" rel="noopener noreferrer">
               Open chatbot in Figma <ArrowUpRight size={14} aria-hidden="true" />
             </a>
@@ -361,8 +531,8 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
       </div>
     </Chapter>
 
-    {/* 08 / REFLECTION */}
-    <Chapter id="bsnl-reflection" number={8} title="Reflection">
+    {/* 09 / REFLECTION */}
+    <Chapter id="bsnl-reflection" number={9} title="Reflection">
       <div className="case-grid">
         <Col col="1 / -1">
           <h2 id="bsnl-reflection-title" className="visually-hidden">Reflection</h2>
@@ -384,7 +554,7 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
       </div>
     </Chapter>
 
-    {/* 09 / NEXT PROJECT */}
+    {/* NEXT PROJECT */}
     {nextProject && (
       <section className="case-chapter case-next" aria-labelledby="bsnl-next-title">
         <div className="case-grid">
@@ -402,7 +572,9 @@ export const BsnlCaseStudy = ({ project, nextProject, onOpenProject }) => (
         </div>
       </section>
     )}
+    <Lightbox image={zoomed} onClose={() => setZoomed(null)} />
   </article>
-);
+  );
+};
 
 export default BsnlCaseStudy;
