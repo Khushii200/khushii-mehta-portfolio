@@ -7,6 +7,28 @@ import { ProjectRow } from '../work/ProjectRow';
 import { CompetitorMatrix } from './CompetitorMatrix';
 import ztLogo from '../../assets/ziptrrip/zt-logo.png';
 import ztEcosystem from '../../assets/ziptrrip/zt-ecosystem.webp';
+import ztSegments from '../../assets/ziptrrip/zt-segments.jpg';
+import ztJourneyMap from '../../assets/ziptrrip/zt-journey-map.jpg';
+import ztFlightFlow from '../../assets/ziptrrip/zt-current-flight-flow.jpg';
+import ztHotelFlow from '../../assets/ziptrrip/zt-current-hotel-flow.jpg';
+import ztS1 from '../../assets/ziptrrip/zt-s01-search.jpg';
+import ztS2 from '../../assets/ziptrrip/zt-s02-flights.jpg';
+import ztS3 from '../../assets/ziptrrip/zt-s03-seats.jpg';
+import ztS6 from '../../assets/ziptrrip/zt-s06-booking-com.jpg';
+import ztS10 from '../../assets/ziptrrip/zt-s10-submitted.jpg';
+import ztPolicy from '../../assets/ziptrrip/zt-s09-policy.jpg';
+import ztNoHotels from '../../assets/ziptrrip/zt-s05-no-hotels.jpg';
+import ztMaps from '../../assets/ziptrrip/zt-s08-maps.jpg';
+import ztMatrix from '../../assets/ziptrrip/zt-opportunity-matrix.jpg';
+import ztProtoFlights from '../../assets/ziptrrip/zt-proto-flights.jpg';
+import ztProtoApproval from '../../assets/ziptrrip/zt-proto-approval.jpg';
+import ztProtoTrip from '../../assets/ziptrrip/zt-proto-itinerary.jpg';
+import ztCardTransfers from '../../assets/ziptrrip/zt-proto-transfers.jpg';
+import ztCardHotels from '../../assets/ziptrrip/zt-proto-hotel-cards.jpg';
+import ztCardRooms from '../../assets/ziptrrip/zt-proto-rooms.jpg';
+import ztProtoV1 from '../../assets/ziptrrip/zt-proto-v1-flights.jpg';
+import ztIa20 from '../../assets/ziptrrip/zt-20-sections.jpg';
+import ztFlow20 from '../../assets/ziptrrip/zt-20-userflow.jpg';
 
 
 /* ------------------------------------------------------------------
@@ -27,32 +49,29 @@ import ztEcosystem from '../../assets/ziptrrip/zt-ecosystem.webp';
 const IMG = {
   logo:          { label: 'ZipTrrip logo', ratio: '4:3', src: ztLogo, alt: 'ZipTrrip logo', light: true },
   ecosystem:     { label: 'Corporate travel ecosystem diagram', ratio: '3:2', src: ztEcosystem, alt: 'Corporate travel ecosystem diagram: ZipTrrip at the centre, connected to the traveller, travel coordinator, company, approvers, finance and travel providers, each with their needs, above the travel journey — search, compare, decide, approve, book, travel, expense' },
-  interview:     { label: 'User interview photograph', ratio: '3:2', src: null, alt: '' },
-  flightFlow:    { label: 'Current flight booking flow', ratio: '21:9', src: null, alt: '' },
-  hotelFlow:     { label: 'Current hotel booking flow', ratio: '21:9', src: null, alt: '' },
-  session1:      { label: 'Session · search', ratio: '16:10', src: null, alt: '' },
-  session2:      { label: 'Session · compare fares', ratio: '16:10', src: null, alt: '' },
-  session3:      { label: 'Session · seat & meal', ratio: '16:10', src: null, alt: '' },
-  session4:      { label: 'Session · off-platform', ratio: '16:10', src: null, alt: '' },
-  session5:      { label: 'Session · pending approval', ratio: '16:10', src: null, alt: '' },
-  policy:        { label: 'Exceeded-policy screenshot', ratio: '16:10', src: null, alt: '' },
-  noHotels:      { label: 'Hotel search screenshot', ratio: '16:10', src: null, alt: '' },
-  maps:          { label: 'Off-platform cab planning screenshot', ratio: '16:10', src: null, alt: '' },
-  hotelError:    { label: 'Hotel search error screenshot', ratio: '16:10', src: null, alt: '' },
-  roundTrip:     { label: 'Round-trip fare selection screenshot', ratio: '16:10', src: null, alt: '' },
-  synthesis:     { label: 'Research synthesis / insights visual', ratio: '16:9', src: null, alt: '' },
-  journey:       { label: 'Booking journey diagram', ratio: '21:9', src: null, alt: '' },
-  matrix:        { label: 'Opportunity prioritisation matrix', ratio: '4:3', src: null, alt: '' },
-  convoFlights:  { label: 'Conversational design · recommendations', ratio: '4:3', src: null, alt: '' },
-  convoApproval: { label: 'Conversational design · approval timeline', ratio: '4:5', src: null, alt: '' },
-  convoTrip:     { label: 'Conversational design · itinerary', ratio: '3:4', src: null, alt: '' },
-  cardTransfers: { label: 'Comparison card · transfers', ratio: '1:1', src: null, alt: '' },
-  cardHotels:    { label: 'Comparison card · hotels', ratio: '1:1', src: null, alt: '' },
-  cardRooms:     { label: 'Comparison card · rooms', ratio: '1:1', src: null, alt: '' },
-  iterV1:        { label: 'Prototype v1', ratio: '16:9', src: null, alt: '' },
-  iterV14:       { label: 'Prototype v14', ratio: '16:9', src: null, alt: '' },
-  ia20:          { label: 'ZipTrrip 2.0 information architecture', ratio: '4:3', src: null, alt: '' },
-  flow20:        { label: 'ZipTrrip 2.0 user flow', ratio: '16:9', src: null, alt: '' },
+  interview: { label: 'Interview synthesis · stakeholder segments', ratio: '2000:1415', src: ztSegments, alt: 'Research repository page “Who uses ZipTrrip and how”: three segments from the interviews — frequent travellers, travel coordinators and admins, approvers and finance — each with goals, pain points and success metrics' },
+  flightFlow: { label: 'Current flight booking flow', ratio: '21:9', src: ztFlightFlow, alt: 'Annotated ZipTrrip flight booking flow: search, results and filters, then a choice between the corporate fare and the regular fare with cancellation and date-change charges' },
+  hotelFlow: { label: 'Current hotel booking flow', ratio: '21:9', src: ztHotelFlow, alt: 'Annotated ZipTrrip hotel booking flow with filters, colleague-booked tags and a red branch for when the hotel is not listed' },
+  session1: { label: 'Session · search', ratio: '16:9', src: ztS1, alt: 'ZipTrrip search page: Need to book a business trip?' },
+  session2: { label: 'Session · compare fares', ratio: '16:9', src: ztS2, alt: 'ZipTrrip flight results with filters and corporate fares' },
+  session3: { label: 'Session · seat & meal', ratio: '16:9', src: ztS3, alt: 'ZipTrrip seat map beside the meal list' },
+  session4: { label: 'Session · off-platform', ratio: '16:9', src: ztS6, alt: 'Booking.com hotel results opened during the booking' },
+  session5: { label: 'Session · pending approval', ratio: '16:9', src: ztS10, alt: 'ZipTrrip trip summary after submission, pending approval' },
+  policy: { label: 'Exceeded-policy screenshot', ratio: '16:9', src: ztPolicy, alt: 'The Finalize your trip dialog with an Exceeded policy! warning: flight policy amount exceeded by 2465 and booking date exceeded by 2 days, with a mandatory reason before Send for approval' },
+  noHotels: { label: 'Hotel search screenshot', ratio: '16:9', src: ztNoHotels, alt: 'ZipTrrip hotel search for Koramangala with Breakfast and 5 star filters, showing No matching hotels found' },
+  maps: { label: 'Off-platform cab planning screenshot', ratio: '16:9', src: ztMaps, alt: 'Google Maps showing routes from Goregaon to Navi Mumbai International Airport, opened during the booking' },
+  synthesis: { label: 'Research synthesis · journey map', ratio: '2000:1711', src: ztJourneyMap, alt: 'Research repository journey map: travel planning and request, then approvals, each with user goals, pain points, workarounds and an opportunity' },
+  matrix: { label: 'Opportunity prioritisation matrix', ratio: '4:3', src: ztMatrix, alt: 'Opportunity prioritisation matrix: fix critical bugs now; plan cab booking, approval intelligence, hotel ratings, an invoice hub, a trip workspace and emergency mode' },
+  convoFlights: { label: 'Conversational design · recommendations', ratio: '4:3', src: ztProtoFlights, alt: 'Prototype: flight options with policy tags and a recommended flight explaining why' },
+  convoApproval: { label: 'Conversational design · approval timeline', ratio: '4:5', src: ztProtoApproval, alt: 'Prototype: approval request with a timeline — created, sent, viewed by manager, decision pending, booking confirmed' },
+  convoTrip: { label: 'Conversational design · itinerary', ratio: '3:4', src: ztProtoTrip, alt: 'Prototype: a single itinerary with flight, transfer, hotel, return flight, policy checks and an emergency contact' },
+  cardTransfers: { label: 'Comparison card · transfers', ratio: '1:1', src: ztCardTransfers, alt: 'Prototype transfer cards with pickup time, capacity and luggage' },
+  cardHotels: { label: 'Comparison card · hotels', ratio: '1:1', src: ztCardHotels, alt: 'Prototype hotel cards with distance from the office, review score and policy status' },
+  cardRooms: { label: 'Comparison card · rooms', ratio: '1:1', src: ztCardRooms, alt: 'Prototype room cards with size, bed, view and total stay' },
+  iterV1: { label: 'Prototype v1', ratio: '16:9', src: ztProtoV1, alt: 'Prototype v1: three flight rows with times, price and a Best Value badge, no policy or reasoning' },
+  iterV14: { label: 'Prototype v14', ratio: '16:9', src: ztProtoFlights, alt: 'Prototype v14: flight cards with policy and refundability tags and a recommended flight with reasons' },
+  ia20: { label: 'ZipTrrip 2.0 information architecture', ratio: '4:3', src: ztIa20, alt: 'ZipTrrip 2.0 information architecture: Home, Trips, Discover, Workspace, Recovery, Memory and Admin' },
+  flow20: { label: 'ZipTrrip 2.0 user flow', ratio: '16:9', src: ztFlow20, alt: 'ZipTrrip 2.0 end-to-end user flow with an AI path and a quick-booking path, preferences with reasons, approval, and re-approval if the price increases' },
   team01:        { label: 'Team photo 01', ratio: '4:3', src: null, alt: '', caption: '' },
   team02:        { label: 'Team photo 02', ratio: '4:5', src: null, alt: '', caption: '' },
   team03:        { label: 'Team photo 03', ratio: '1:1', src: null, alt: '', caption: '' },
@@ -348,7 +367,7 @@ export const ZiptrripCaseStudy = ({ nextProject, onOpenProject }) => {
             </p>
           </Col>
           <Col col="1 / span 7">
-            <Slot id="interview" source="Customer interviews" caption="Six interviews across six organisations, 4–10 June — travellers, coordinators and admins." onZoom={setZoomed} />
+            <Slot id="interview" source="Customer interviews · segments" caption="Six interviews across six organisations, 4–10 June, synthesised into three user segments with their goals, pain points and success metrics." onZoom={setZoomed} />
           </Col>
           <Col col="8 / span 5" className="case-col--end">
             <p className="case-meta">What the interviews added</p>
@@ -414,14 +433,8 @@ export const ZiptrripCaseStudy = ({ nextProject, onOpenProject }) => {
               ))}
             </ol>
           </Col>
-          <Col col="1 / span 6">
-            <Slot id="hotelError" source="Reported · hotel search" caption="The blank white screen a travel admin described during hotel search." onZoom={setZoomed} />
-          </Col>
-          <Col col="7 / span 6">
-            <Slot id="roundTrip" source="Reported · round-trip" caption="Where round-trip booking stalled after fare selection, on iOS and desktop." onZoom={setZoomed} />
-          </Col>
           <Col col="1 / -1">
-            <Slot id="synthesis" source="Synthesis" caption="How the session, the interviews and the benchmark came together into a small set of findings." onZoom={setZoomed} />
+            <Slot id="synthesis" source="Synthesis · journey map" caption="The end-to-end journey map built from interview evidence: each stage with user goals, pain points, workarounds and an opportunity." onZoom={setZoomed} />
           </Col>
         </div>
       </Chapter>
@@ -444,10 +457,7 @@ export const ZiptrripCaseStudy = ({ nextProject, onOpenProject }) => {
             <Flow items={JOURNEY} label="The complete decision journey" className="case-flow--journey" />
           </Col>
           <Col col="1 / -1">
-            <Slot id="journey" source="Booking journey" caption="Search → Compare → Decide → Approve → Book → Coordinate → Resolve, with the friction marked at each stage." onZoom={setZoomed} />
-          </Col>
-          <Col col="1 / -1">
-            <ol className="case-steps-inline zt3-friction">
+<ol className="case-steps-inline zt3-friction">
               {FRICTION_AT.map(([stage, where]) => (
                 <li key={stage}><span className="case-points__num">{stage}</span>{where}</li>
               ))}

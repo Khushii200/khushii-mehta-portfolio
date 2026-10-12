@@ -1650,3 +1650,5 @@ html.has-pencil-cursor .is-locked .index-row { cursor: none !important; }
 }
 .cm-group__label { position: sticky; left: 0.9rem; display: inline-block; }
 .cm-group th > .cm-group__label > span { margin-right: 0.6rem; color: var(--color-text); }
+.case-study--zt [data-slot] .zt-figure__frame, .case-study--zt .zt-figure__frame { max-height: 44rem; }
+.case-study--zt .zt-figure__frame img { object-fit: cover; object-position: top; max-height: 44rem; }
